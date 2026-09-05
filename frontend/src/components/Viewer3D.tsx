@@ -36,7 +36,7 @@ type HoverTarget =
     }
   | null;
 
-type InteractiveObject = THREE.Object3D & {
+type InteractiveObject = THREE.Mesh & {
   userData: {
     targetType?: 'floor' | 'unit';
     floorNumber?: number;
