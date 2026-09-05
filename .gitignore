@@ -1,36 +1,162 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ============================================
+# GeoVISTA / 3D ULPIN - Git Ignore
+# ============================================
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
 
-# testing
-/coverage
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
 
-# next.js
-/.next/
-/out/
+# Python packaging
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
 
-# production
-/build
+# ---------- Testing ----------
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+.tox/
+.nox/
 
-# misc
+# ---------- Environment / Secrets ----------
+.env
+.env.*
+!.env.example
+
+# ---------- IDE / Editors ----------
+.vscode/
+.idea/
+*.swp
+*.swo
 .DS_Store
-*.pem
 
-# debug
+# ---------- Node / React ----------
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# local env files
-.env*.local
-.env
+# Build output
+frontend/dist/
+frontend/build/
+frontend/.vite/
 
-# vercel
-.vercel
+# ---------- Logs ----------
+*.log
+logs/
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# ---------- OS ----------
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ---------- GIS / Large Data ----------
+# Raw geospatial data can become very large
+*.las
+*.laz
+*.tif
+*.tiff
+*.img
+*.ecw
+
+# Point cloud / 3D temporary files
+*.ply
+*.pcd
+*.xyz
+*.e57
+
+# Large 3D model files
+*.obj
+*.fbx
+*.glb
+*.gltf
+*.3ds
+
+# Temporary GIS files
+*.qgz~
+*.gpkg-shm
+*.gpkg-wal
+
+# ---------- Generated / Temporary Data ----------
+data/raw/
+data/temp/
+data/tmp/
+output/
+outputs/
+tmp/
+temp/
+
+# ---------- AI / ML ----------
+# Model weights can be very large
+*.pt
+*.pth
+*.onnx
+*.weights
+*.h5
+
+# ML generated files
+runs/
+wandb/
+mlruns/
+
+# ---------- Database ----------
+*.sqlite
+*.sqlite3
+*.db
+
+# PostgreSQL local dumps
+*.dump
+*.backup
+
+# ---------- Cache ----------
+.cache/
+.pycache/
+.mypy_cache/
+.ruff_cache/
+
+# ---------- Jupyter ----------
+.ipynb_checkpoints/
+
+# ---------- Secrets / Keys ----------
+*.pem
+*.key
+*.crt
+credentials.json
+service-account*.json
+
+# ---------- Local Configuration ----------
+config.local.*
+settings.local.*
+
+# ---------- Generated Documentation ----------
+*.tmp
+*.bak
+
+# ---------- Backup Files ----------
+*.orig
+*.backup
+*~
+
+# ============================================
+# IMPORTANT PROJECT FILES - DO NOT IGNORE
+# ============================================
+
+# requirements.txt
+# package.json
+# package-lock.json
+# README.md
+# docs/
+# src/

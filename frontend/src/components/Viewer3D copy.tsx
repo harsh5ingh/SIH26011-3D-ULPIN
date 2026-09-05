@@ -7,9 +7,7 @@ import {
   Layers,
   RefreshCw,
   Rotate3D,
-  MousePointer2,
-  Lock,
-  Unlock
+  MousePointer2
 } from 'lucide-react';
 import { useGeoVista } from '../context/GeoVistaContext';
 import {
@@ -80,18 +78,11 @@ const Viewer3D: React.FC = () => {
   const [hoveredUnit, setHoveredUnit] =
     useState<string | null>(null);
 
-  const [cameraLocked, setCameraLocked] =
-    useState(false);
-
-  // Prevent hover/floor/validation scene rebuilds from resetting the camera.
-  const cameraFitKeyRef =
-    useRef<string | null>(null);
-
   const cameraValuesRef = useRef({
     radius: 80,
-    theta: Math.PI / 5,
-    phi: Math.PI / 2.9,
-    target: new THREE.Vector3(0, 8, 0)
+    theta: Math.PI / 4,
+    phi: Math.PI / 3,
+    target: new THREE.Vector3(0, 500, 0)
   });
 
   const dragRef = useRef({
@@ -116,17 +107,7 @@ const Viewer3D: React.FC = () => {
       object?.footprint_2d &&
       object.footprint_2d.length >= 3
     ) {
-      const xs = object.footprint_2d.map((p) => p[0]);
-      const ys = object.footprint_2d.map((p) => p[1]);
-
-      const width = Math.max(...xs) - Math.min(...xs);
-      const depth = Math.max(...ys) - Math.min(...ys);
-
-      // Reject degenerate/near-zero footprints so the viewer never
-      // renders an invisible building.
-      if (width > 2 && depth > 2) {
-        return object.footprint_2d;
-      }
+      return object.footprint_2d;
     }
 
     return [
@@ -267,159 +248,6 @@ const Viewer3D: React.FC = () => {
     };
   };
 
-
-  /*
-   * ------------------------------------------------------------
-   * SOCIETY / CONTEXT HELPERS
-   * ------------------------------------------------------------
-   * The selected building remains the real interactive cadastral
-   * object. These surrounding elements are visual context only,
-   * so the demo feels like a real apartment society instead of
-   * an isolated CAD graph.
-   */
-
-  const addSocietyTree = (
-    scene: THREE.Scene,
-    x: number,
-    z: number
-  ) => {
-    const trunk = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.22, 0.28, 2.2, 8),
-      new THREE.MeshStandardMaterial({ color: 0x8b5a2b })
-    );
-
-    trunk.position.set(x, 1.1, z);
-    scene.add(trunk);
-
-    const crown = new THREE.Mesh(
-      new THREE.SphereGeometry(1.35, 12, 12),
-      new THREE.MeshStandardMaterial({
-        color: 0x22c55e,
-        roughness: 0.9
-      })
-    );
-
-    crown.position.set(x, 2.7, z);
-    scene.add(crown);
-  };
-
-  const addSocietyBuilding = (
-    scene: THREE.Scene,
-    x: number,
-    z: number,
-    width: number,
-    depth: number,
-    floorsCount: number,
-    label: string
-  ) => {
-    const floorHeight = 3.2;
-    const totalHeight = floorsCount * floorHeight;
-
-    const group = new THREE.Group();
-    group.position.set(x, 0, z);
-    group.userData.fitCamera = true;
-
-    // Main block
-    const body = new THREE.Mesh(
-      new THREE.BoxGeometry(width, totalHeight, depth),
-      new THREE.MeshStandardMaterial({
-        color: 0x334155,
-        roughness: 0.72,
-        metalness: 0.04
-      })
-    );
-
-    body.position.y = totalHeight / 2;
-    group.add(body);
-
-    // Floor slabs
-    for (let i = 1; i < floorsCount; i += 1) {
-      const slab = new THREE.Mesh(
-        new THREE.BoxGeometry(width + 0.8, 0.14, depth + 0.8),
-        new THREE.MeshStandardMaterial({
-          color: 0x94a3b8,
-          roughness: 0.7
-        })
-      );
-
-      slab.position.y = i * floorHeight;
-      group.add(slab);
-    }
-
-    // Roof slab
-    const roof = new THREE.Mesh(
-      new THREE.BoxGeometry(width + 1.2, 0.22, depth + 1.2),
-      new THREE.MeshStandardMaterial({
-        color: 0x1e293b,
-        roughness: 0.75
-      })
-    );
-
-    roof.position.y = totalHeight + 0.1;
-    group.add(roof);
-
-    // Window strips on the front and back.
-    const windowMaterial = new THREE.MeshStandardMaterial({
-      color: 0x7dd3fc,
-      emissive: 0x0c4a6e,
-      emissiveIntensity: 0.45,
-      roughness: 0.25,
-      metalness: 0.1
-    });
-
-    const windowWidth = Math.max(1.4, width / 8);
-    const windowHeight = 1.15;
-    const columns = 5;
-
-    for (let floor = 0; floor < floorsCount; floor += 1) {
-      const y = floor * floorHeight + 1.7;
-
-      for (let col = 0; col < columns; col += 1) {
-        const px =
-          -width / 2 +
-          2.6 +
-          col * ((width - 5.2) / Math.max(1, columns - 1));
-
-        const front = new THREE.Mesh(
-          new THREE.BoxGeometry(windowWidth, windowHeight, 0.08),
-          windowMaterial
-        );
-        front.position.set(px, y, depth / 2 + 0.05);
-        group.add(front);
-
-        const back = front.clone();
-        back.position.z = -depth / 2 - 0.05;
-        group.add(back);
-      }
-    }
-
-    // Entrance canopy
-    const entrance = new THREE.Mesh(
-      new THREE.BoxGeometry(5.5, 0.3, 2.8),
-      new THREE.MeshStandardMaterial({
-        color: 0x64748b,
-        roughness: 0.65
-      })
-    );
-
-    entrance.position.set(0, 1.3, depth / 2 + 1.0);
-    group.add(entrance);
-
-    // Label plaque: visual-only, rendered as a small sign.
-    const sign = new THREE.Mesh(
-      new THREE.BoxGeometry(Math.min(12, width - 4), 1.0, 0.18),
-      new THREE.MeshStandardMaterial({
-        color: 0x0f172a,
-        roughness: 0.55
-      })
-    );
-
-    sign.position.set(0, Math.min(totalHeight - 1.0, 8.5), depth / 2 + 0.15);
-    group.add(sign);
-
-    scene.add(group);
-  };
-
   const createExtrudedGeometry = (
     coordinates: number[][],
     zMin: number,
@@ -500,15 +328,8 @@ const Viewer3D: React.FC = () => {
 
     const scene = new THREE.Scene();
 
-    // Real-world map-like atmosphere: sky tone + light distance fog.
     scene.background =
-      new THREE.Color(0x9fd4f2);
-
-    scene.fog = new THREE.Fog(
-      0x9fd4f2,
-      95,
-      190
-    );
+      new THREE.Color(0x07111f);
 
     const width =
       mount.clientWidth || 900;
@@ -544,9 +365,6 @@ const Viewer3D: React.FC = () => {
     renderer.outputColorSpace =
       THREE.SRGBColorSpace;
 
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
     mount.appendChild(
       renderer.domElement
     );
@@ -561,8 +379,8 @@ const Viewer3D: React.FC = () => {
 
     scene.add(
       new THREE.AmbientLight(
-        0xf5fbff,
-        1.8
+        0xffffff,
+        1.15
       )
     );
 
@@ -573,65 +391,21 @@ const Viewer3D: React.FC = () => {
       );
 
     directional.position.set(
-      55,
-      85,
-      45
+      80,
+      140,
+      100
     );
-
-    directional.castShadow = true;
-    directional.shadow.mapSize.set(1024, 1024);
-    directional.shadow.camera.near = 1;
-    directional.shadow.camera.far = 220;
 
     scene.add(directional);
 
     const hemisphere =
       new THREE.HemisphereLight(
-        0xdff4ff,
-        0x49634a,
-        2.0
+        0x93c5fd,
+        0x0f172a,
+        1.3
       );
 
     scene.add(hemisphere);
-
-    /*
-     * ----------------------------------------------------------
-     * SKY / SUN
-     * ----------------------------------------------------------
-     */
-
-    const skyDome = new THREE.Mesh(
-      new THREE.SphereGeometry(
-        260,
-        32,
-        16
-      ),
-      new THREE.MeshBasicMaterial({
-        color: 0xbfe6fb,
-        side: THREE.BackSide
-      })
-    );
-
-    skyDome.position.y = 45;
-    scene.add(skyDome);
-
-    const sunDisc = new THREE.Mesh(
-      new THREE.SphereGeometry(
-        5,
-        24,
-        16
-      ),
-      new THREE.MeshBasicMaterial({
-        color: 0xfff3bf
-      })
-    );
-
-    sunDisc.position.set(
-      -75,
-      90,
-      -80
-    );
-    scene.add(sunDisc);
 
     /*
      * ----------------------------------------------------------
@@ -661,346 +435,22 @@ const Viewer3D: React.FC = () => {
 
     /*
      * ----------------------------------------------------------
-     * APARTMENT SOCIETY CONTEXT
-     * ----------------------------------------------------------
-     * The centre building is the actual cadastral object.
-     * The surrounding block is a visual/demo context only.
-     * ----------------------------------------------------------
-     */
-
-    if (selectedBuilding) {
-      /*
-       * Ground / landscaping base
-       */
-      const societyGround = new THREE.Mesh(
-        new THREE.PlaneGeometry(150, 120),
-        new THREE.MeshStandardMaterial({
-          color: 0x66875b,
-          roughness: 1
-        })
-      );
-
-      societyGround.rotation.x = -Math.PI / 2;
-      societyGround.position.y = -0.35;
-      societyGround.receiveShadow = true;
-      scene.add(societyGround);
-
-      /*
-       * Main driveway loop
-       */
-      const roadMaterial =
-        new THREE.MeshStandardMaterial({
-          color: 0x3e454c,
-          roughness: 0.92
-        });
-
-      const road = new THREE.Mesh(
-        new THREE.BoxGeometry(125, 0.18, 10),
-        roadMaterial
-      );
-      road.position.set(0, -0.23, 32);
-      road.receiveShadow = true;
-      scene.add(road);
-
-      const crossRoad = new THREE.Mesh(
-        new THREE.BoxGeometry(10, 0.18, 100),
-        roadMaterial
-      );
-      crossRoad.position.set(-38, -0.22, 0);
-      crossRoad.receiveShadow = true;
-      scene.add(crossRoad);
-
-      /*
-       * Road divider / curb
-       */
-      const curbMaterial =
-        new THREE.MeshStandardMaterial({
-          color: 0x64748b,
-          roughness: 0.85
-        });
-
-      [-4.8, 4.8].forEach((offset) => {
-        const curb = new THREE.Mesh(
-          new THREE.BoxGeometry(125, 0.22, 0.35),
-          curbMaterial
-        );
-        curb.position.set(0, -0.08, 32 + offset);
-        scene.add(curb);
-      });
-
-      /*
-       * Central landscaped garden.
-       */
-      const lawn = new THREE.Mesh(
-        new THREE.BoxGeometry(25, 0.25, 18),
-        new THREE.MeshStandardMaterial({
-          color: 0x4e8a4e,
-          roughness: 1
-        })
-      );
-      lawn.position.set(-2, -0.16, 30);
-      lawn.receiveShadow = true;
-      scene.add(lawn);
-
-      const gardenPath = new THREE.Mesh(
-        new THREE.BoxGeometry(2.4, 0.12, 18),
-        new THREE.MeshStandardMaterial({
-          color: 0xb6a98d,
-          roughness: 0.95
-        })
-      );
-      gardenPath.position.set(-2, -0.01, 30);
-      scene.add(gardenPath);
-
-      /*
-       * Two rows of proper parking bays.
-       */
-      for (let row = 0; row < 2; row += 1) {
-        for (let col = 0; col < 5; col += 1) {
-          const slot = new THREE.Mesh(
-            new THREE.BoxGeometry(4.2, 0.07, 7.2),
-            new THREE.MeshStandardMaterial({
-              color: 0x3d4652,
-              roughness: 0.9
-            })
-          );
-
-          slot.position.set(
-            -25 + col * 5.2,
-            -0.02,
-            15 + row * 8
-          );
-
-          slot.receiveShadow = true;
-          scene.add(slot);
-
-          const divider = new THREE.Mesh(
-            new THREE.BoxGeometry(0.06, 0.09, 7.0),
-            new THREE.MeshBasicMaterial({
-              color: 0xd5d9de
-            })
-          );
-
-          divider.position.set(
-            -27.6 + col * 5.2,
-            0.03,
-            15 + row * 8
-          );
-
-          scene.add(divider);
-        }
-      }
-
-      /*
-       * Society boundary wall sections.
-       */
-      const wallMaterial =
-        new THREE.MeshStandardMaterial({
-          color: 0x64748b,
-          roughness: 0.8
-        });
-
-      [
-        [0, -51, 120, 1],
-        [60, 0, 1, 102],
-        [-60, 0, 1, 102]
-      ].forEach(([x, z, w, d]) => {
-        const wall = new THREE.Mesh(
-          new THREE.BoxGeometry(w, 1.2, d),
-          wallMaterial
-        );
-        wall.position.set(x, 0.6, z);
-        wall.receiveShadow = true;
-        scene.add(wall);
-      });
-
-      /*
-       * Gate pillars.
-       */
-      [-8, 8].forEach((x) => {
-        const pillar = new THREE.Mesh(
-          new THREE.BoxGeometry(1.8, 4.5, 1.8),
-          new THREE.MeshStandardMaterial({
-            color: 0x94a3b8,
-            roughness: 0.68
-          })
-        );
-        pillar.position.set(x, 2.25, -49);
-        pillar.castShadow = true;
-        scene.add(pillar);
-      });
-
-      /*
-       * Secondary apartment: same society scale, visual context.
-       * It has proper floors, windows, balconies and a roof.
-       */
-      addSocietyBuilding(
-        scene,
-        39,
-        -8,
-        20,
-        16,
-        5,
-        'SUNRISE TOWER'
-      );
-
-      /*
-       * Third small residential block makes the society feel occupied,
-       * without stealing focus from the selected cadastral building.
-       */
-      addSocietyBuilding(
-        scene,
-        -35,
-        -18,
-        17,
-        14,
-        4,
-        'PALM RESIDENCY'
-      );
-
-      /*
-       * Street lamps / pedestrian-scale details.
-       */
-      [
-        [-18, 24],
-        [18, 24],
-        [-43, -8],
-        [43, -8]
-      ].forEach(([x, z]) => {
-        const pole = new THREE.Mesh(
-          new THREE.CylinderGeometry(
-            0.10,
-            0.13,
-            4.2,
-            10
-          ),
-          new THREE.MeshStandardMaterial({
-            color: 0x334155,
-            roughness: 0.55,
-            metalness: 0.25
-          })
-        );
-
-        pole.position.set(
-          x,
-          2.1,
-          z
-        );
-        pole.castShadow = true;
-        scene.add(pole);
-
-        const lamp = new THREE.Mesh(
-          new THREE.SphereGeometry(
-            0.28,
-            12,
-            8
-          ),
-          new THREE.MeshStandardMaterial({
-            color: 0xfff4c2,
-            emissive: 0xffd76a,
-            emissiveIntensity: 0.8
-          })
-        );
-
-        lamp.position.set(
-          x,
-          4.25,
-          z
-        );
-        scene.add(lamp);
-      });
-
-      /*
-       * Trees and landscaping.
-       */
-      [
-        [-30, 30],
-        [-22, 29],
-        [24, 29],
-        [31, 25],
-        [25, -22],
-        [8, -30],
-        [-20, -29],
-        [-43, 15],
-        [47, 20]
-      ].forEach(([x, z]) =>
-        addSocietyTree(scene, x, z)
-      );
-    }
-
-    /*
-     * ----------------------------------------------------------
      * GROUND GRID
      * ----------------------------------------------------------
      */
 
     const grid =
       new THREE.GridHelper(
-        130,
-        26,
-        0x243449,
-        0x142235
+        240,
+        24,
+        0x334155,
+        0x1e293b
       );
 
-    // Keep the 3D scene in a local elevation frame.
-    // The real cadastral Z values (~500m) are metadata; rendering starts at local 0m.
-    grid.position.y = -0.2;
+    grid.position.y =
+      groundElevation - 0.2;
 
-    grid.material.transparent = true;
-    grid.visible = false;
     scene.add(grid);
-
-    /*
-     * ----------------------------------------------------------
-     * TERRAIN / MAP-LIKE BASE
-     *
-     * No visible graph grid. A large physical ground plane,
-     * subtle terrain patches, roads and landscaping create the
-     * Google-Earth-like spatial feel.
-     * ----------------------------------------------------------
-     */
-
-    const terrain = new THREE.Mesh(
-      new THREE.PlaneGeometry(150, 120, 1, 1),
-      new THREE.MeshStandardMaterial({
-        color: 0x6f9564,
-        roughness: 1,
-        metalness: 0
-      })
-    );
-
-    terrain.rotation.x = -Math.PI / 2;
-    terrain.position.y = -0.38;
-    terrain.receiveShadow = true;
-    scene.add(terrain);
-
-    // Soft terrain patches, not a mathematical grid.
-    [
-      { x: -40, z: -30, w: 34, d: 22, c: 0x789b69 },
-      { x: 35, z: 25, w: 38, d: 28, c: 0x668d5d },
-      { x: -10, z: 42, w: 28, d: 18, c: 0x7fa56c },
-      { x: 45, z: -28, w: 25, d: 20, c: 0x72945f }
-    ].forEach((patch) => {
-      const mesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-          patch.w,
-          patch.d
-        ),
-        new THREE.MeshStandardMaterial({
-          color: patch.c,
-          roughness: 1
-        })
-      );
-
-      mesh.rotation.x = -Math.PI / 2;
-      mesh.position.set(
-        patch.x,
-        -0.34,
-        patch.z
-      );
-      mesh.receiveShadow = true;
-      scene.add(mesh);
-    });
 
     /*
      * ----------------------------------------------------------
@@ -1017,7 +467,7 @@ const Viewer3D: React.FC = () => {
           (point) =>
             new THREE.Vector3(
               point[0] - origin.x,
-              0.05,
+              groundElevation + 0.05,
               point[1] - origin.y
             )
         );
@@ -1075,8 +525,8 @@ const Viewer3D: React.FC = () => {
       const geometry =
         createExtrudedGeometry(
           buildingFootprint,
-          buildingMinZ - groundElevation,
-          buildingMaxZ - groundElevation,
+          buildingMinZ,
+          buildingMaxZ,
           origin
         );
 
@@ -1084,7 +534,7 @@ const Viewer3D: React.FC = () => {
         new THREE.MeshStandardMaterial({
           color: 0x64748b,
           transparent: true,
-          opacity: 0.018,
+          opacity: 0.055,
           side: THREE.DoubleSide,
           depthWrite: false
         });
@@ -1110,7 +560,7 @@ const Viewer3D: React.FC = () => {
           new THREE.LineBasicMaterial({
             color: 0x94a3b8,
             transparent: true,
-            opacity: 0.10
+            opacity: 0.25
           })
         );
 
@@ -1119,472 +569,225 @@ const Viewer3D: React.FC = () => {
 
     /*
      * ----------------------------------------------------------
-     * HERO APARTMENT BUILDING
-     *
-     * The real Floor + PropertyUnit records drive the interactive
-     * building. Visual geometry is normalized into an architectural
-     * apartment scale so it reads like a real society.
+     * INTERACTIVE OBJECTS
      * ----------------------------------------------------------
      */
 
     const interactiveObjects:
       InteractiveObject[] = [];
 
-    const heroWidth = 28;
-    const heroDepth = 18;
-
-    const visibleFloors = floors.filter((floor) => {
-      if (
-        selectedFloorFilter !== 'ALL' &&
-        selectedFloorFilter !== floor.floor_number
-      ) {
-        return false;
-      }
-
-      if (
-        isolatedFloor !== 'ALL' &&
-        isolatedFloor !== floor.floor_number
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-
     /*
-     * Hero plinth
+     * ----------------------------------------------------------
+     * FLOOR VOLUMES
+     * ----------------------------------------------------------
      */
-    if (selectedBuilding && floors.length > 0) {
-      const plinth = new THREE.Mesh(
-        new THREE.BoxGeometry(
-          heroWidth + 2.2,
-          0.65,
-          heroDepth + 2.2
-        ),
-        new THREE.MeshStandardMaterial({
-          color: 0x4b5563,
-          roughness: 0.86
-        })
-      );
 
-      plinth.position.y = -0.32;
-      plinth.castShadow = true;
-      plinth.receiveShadow = true;
-      scene.add(plinth);
-    }
+    floors.forEach(
+      (floor: Floor) => {
+        if (
+          selectedFloorFilter !== 'ALL' &&
+          selectedFloorFilter !==
+            floor.floor_number
+        ) {
+          return;
+        }
 
-    /*
-     * Floor-by-floor architectural stack.
-     */
-    visibleFloors.forEach((floor: Floor) => {
-      const localMin =
-        floor.z_min_m - groundElevation;
+        if (
+          isolatedFloor !== 'ALL' &&
+          isolatedFloor !==
+            floor.floor_number
+        ) {
+          return;
+        }
 
-      const localMax =
-        floor.z_max_m - groundElevation;
+        const isHovered =
+          hoveredFloor ===
+          floor.floor_number;
 
-      const actualHeight =
-        Math.max(2.6, localMax - localMin);
+        const isIsolated =
+          isolatedFloor ===
+          floor.floor_number;
 
-      const isHovered =
-        hoveredFloor === floor.floor_number;
+        const geometry =
+          createExtrudedGeometry(
+            buildingFootprint,
+            floor.z_min_m,
+            floor.z_max_m,
+            origin
+          );
 
-      const isIsolated =
-        isolatedFloor === floor.floor_number ||
-        selectedFloorFilter === floor.floor_number;
-
-      /*
-       * When a floor is hovered, other floors become subdued.
-       * This creates the cutaway/inspection feeling from a GIS
-       * volumetric viewer.
-       */
-      const otherFloor =
-        hoveredFloor !== null &&
-        !isHovered;
-
-      const floorShell =
-        new THREE.Mesh(
-          new THREE.BoxGeometry(
-            heroWidth,
-            actualHeight - 0.22,
-            heroDepth
-          ),
+        const material =
           new THREE.MeshStandardMaterial({
-            color:
-              isHovered
-                ? 0x22d3ee
-                : isIsolated
-                  ? 0x8b5cf6
-                  : 0x64748b,
+            color: getFloorColor(
+              floor.floor_number,
+              isHovered,
+              isIsolated
+            ),
             transparent: true,
-            opacity:
-              otherFloor
-                ? 0.025
-                : isHovered
-                  ? 0.18
-                  : isIsolated
-                    ? 0.12
-                    : 0.065,
-            roughness: 0.58,
-            metalness: 0.03,
+            opacity: isHovered
+              ? 0.34
+              : isIsolated
+                ? 0.22
+                : 0.10,
             side: THREE.DoubleSide,
             depthWrite: false
-          })
-        ) as InteractiveObject;
+          });
 
-      floorShell.position.set(
-        0,
-        localMin + actualHeight / 2,
-        0
-      );
+        const mesh =
+          new THREE.Mesh(
+            geometry,
+            material
+          ) as InteractiveObject;
 
-      floorShell.userData.targetType = 'floor';
-      floorShell.userData.floorNumber =
-        floor.floor_number;
-      floorShell.userData.fitCamera = true;
-      floorShell.renderOrder = 1;
+        mesh.userData.targetType =
+          'floor';
 
-      scene.add(floorShell);
-      interactiveObjects.push(floorShell);
+        mesh.userData.floorNumber =
+          floor.floor_number;
 
-      /*
-       * Floor slab.
-       */
-      const slab = new THREE.Mesh(
-        new THREE.BoxGeometry(
-          heroWidth + 0.55,
-          0.16,
-          heroDepth + 0.55
-        ),
-        new THREE.MeshStandardMaterial({
-          color:
-            isHovered
-              ? 0x67e8f9
-              : 0x94a3b8,
-          roughness: 0.74
-        })
-      );
+        mesh.renderOrder = 1;
 
-      slab.position.set(
-        0,
-        localMin,
-        0
-      );
+        scene.add(mesh);
 
-      slab.castShadow = true;
-      slab.receiveShadow = true;
-      scene.add(slab);
-
-      /*
-       * Real property units on this floor.
-       */
-      const floorUnits =
-        properties.filter(
-          (unit) =>
-            unit.floor_number ===
-            floor.floor_number
+        interactiveObjects.push(
+          mesh
         );
+      }
+    );
 
-      floorUnits.forEach(
-        (unit, unitIndex) => {
-          const selected =
-            selectedProperty?.id === unit.id;
+    /*
+     * ----------------------------------------------------------
+     * PROPERTY UNIT VOLUMES
+     * ----------------------------------------------------------
+     */
 
-          const hovered =
-            hoveredUnit === unit.id;
+    properties.forEach(
+      (unit) => {
+        if (
+          selectedFloorFilter !== 'ALL' &&
+          selectedFloorFilter !==
+            unit.floor_number
+        ) {
+          return;
+        }
 
-          const conflict =
-            validation?.results?.some(
-              (result) =>
-                result.target_object_id === unit.id &&
-                result.rule_id === 'RULE_05' &&
-                result.status === 'FAIL'
-            ) ?? false;
+        if (
+          isolatedFloor !== 'ALL' &&
+          isolatedFloor !==
+            unit.floor_number
+        ) {
+          return;
+        }
 
-          const unitWidth =
-            Math.min(
-              12.8,
-              heroWidth / 2 - 0.8
-            );
+        const selected =
+          selectedProperty?.id ===
+          unit.id;
 
-          const unitDepth =
-            heroDepth - 2.4;
+        const hovered =
+          hoveredUnit === unit.id;
 
-          const unitHeight =
-            Math.max(
-              2.15,
-              actualHeight - 0.50
-            );
+        /*
+         * RULE_05 = volumetric overlap
+         */
+        const hasVolumetricConflict =
+          validation?.results?.some(
+            (result) =>
+              result.target_object_id ===
+                unit.id &&
+              result.rule_id ===
+                'RULE_05' &&
+              result.status === 'FAIL'
+          ) ?? false;
 
-          const side =
-            unitIndex % 2 === 0
-              ? -1
-              : 1;
-
-          const unitMesh =
-            new THREE.Mesh(
-              new THREE.BoxGeometry(
-                unitWidth,
-                unitHeight,
-                unitDepth
-              ),
-              new THREE.MeshStandardMaterial({
-                color:
-                  conflict
-                    ? 0xef4444
-                    : selected
-                      ? 0xa855f7
-                      : hovered
-                        ? 0x22d3ee
-                        : 0x64748b,
-                transparent: true,
-                opacity:
-                  conflict ||
-                  selected ||
-                  hovered
-                    ? 0.88
-                    : 0.48,
-                roughness: 0.58,
-                metalness: 0.08,
-                side: THREE.DoubleSide
-              })
-            ) as InteractiveObject;
-
-          unitMesh.position.set(
-            side *
-              (unitWidth / 2 + 0.20),
-            localMin +
-              0.27 +
-              unitHeight / 2,
-            0
+        const geometry =
+          createExtrudedGeometry(
+            unit.footprint_2d,
+            unit.z_min_m,
+            unit.z_max_m,
+            origin
           );
 
-          unitMesh.userData.targetType = 'unit';
-          unitMesh.userData.property = unit;
-          unitMesh.userData.fitCamera = true;
-          unitMesh.renderOrder = 5;
-
-          unitMesh.castShadow = true;
-          unitMesh.receiveShadow = true;
-
-          scene.add(unitMesh);
-          interactiveObjects.push(unitMesh);
-
-          /*
-           * Unit border.
-           */
-          const edge =
-            new THREE.LineSegments(
-              new THREE.EdgesGeometry(
-                unitMesh.geometry
-              ),
-              new THREE.LineBasicMaterial({
-                color:
-                  conflict
-                    ? 0xff3b30
-                    : selected
-                      ? 0xe879f9
-                      : hovered
-                        ? 0x67e8f9
-                        : 0xdbeafe,
-                transparent: true,
-                opacity:
-                  conflict ||
-                  selected ||
-                  hovered
-                    ? 1
-                    : 0.32
-              })
-            );
-
-          edge.position.copy(
-            unitMesh.position
-          );
-
-          edge.renderOrder = 6;
-          scene.add(edge);
-
-          /*
-           * Balcony.
-           */
-          const balcony =
-            new THREE.Mesh(
-              new THREE.BoxGeometry(
-                unitWidth * 0.70,
-                0.14,
-                2.0
-              ),
-              new THREE.MeshStandardMaterial({
-                color: 0x7c8798,
-                roughness: 0.7
-              })
-            );
-
-          balcony.position.set(
-            side *
-              (unitWidth / 2 + 0.20),
-            localMin + 0.72,
-            heroDepth / 2 + 0.95
-          );
-
-          balcony.castShadow = true;
-          scene.add(balcony);
-
-          /*
-           * Balcony glass/rail.
-           */
-          const rail =
-            new THREE.Mesh(
-              new THREE.BoxGeometry(
-                unitWidth * 0.70,
-                0.72,
-                0.08
-              ),
-              new THREE.MeshStandardMaterial({
-                color: 0xcbd5e1,
-                roughness: 0.35,
-                metalness: 0.2,
-                transparent: true,
-                opacity: 0.72
-              })
-            );
-
-          rail.position.set(
-            side *
-              (unitWidth / 2 + 0.20),
-            localMin + 1.12,
-            heroDepth / 2 + 1.90
-          );
-
-          scene.add(rail);
-
-          /*
-           * Front facade windows.
-           */
-          const glass =
-            new THREE.MeshStandardMaterial({
-              color: 0x7dd3fc,
-              emissive: 0x075985,
-              emissiveIntensity: 0.38,
-              roughness: 0.18,
-              metalness: 0.18
-            });
-
-          for (
-            let windowIndex = 0;
-            windowIndex < 3;
-            windowIndex += 1
-          ) {
-            const windowMesh =
-              new THREE.Mesh(
-                new THREE.BoxGeometry(
-                  1.65,
-                  1.05,
-                  0.10
-                ),
-                glass
+        const color =
+          hasVolumetricConflict
+            ? 0xef4444
+            : getUnitColor(
+                unit,
+                selected,
+                hovered
               );
 
-            windowMesh.position.set(
-              side *
-                (unitWidth / 2 + 0.20),
-              localMin + 1.70,
-              -4.2 +
-                windowIndex * 4.1
-            );
+        const material =
+          new THREE.MeshStandardMaterial({
+            color,
+            transparent: true,
+            opacity:
+              selected ||
+              hovered ||
+              hasVolumetricConflict
+                ? 0.92
+                : 0.76,
+            metalness: 0.05,
+            roughness: 0.55,
+            side: THREE.DoubleSide
+          });
 
-            windowMesh.rotation.y =
-              Math.PI / 2;
-
-            scene.add(windowMesh);
-          }
-        });
-
-      /*
-       * Architectural corner columns.
-       */
-      [-heroWidth / 2, heroWidth / 2].forEach((x) => {
-        const column =
+        const mesh =
           new THREE.Mesh(
-            new THREE.BoxGeometry(
-              0.42,
-              actualHeight,
-              0.42
-            ),
-            new THREE.MeshStandardMaterial({
-              color: 0x7c8798,
-              roughness: 0.66
+            geometry,
+            material
+          ) as InteractiveObject;
+
+        mesh.userData.targetType =
+          'unit';
+
+        mesh.userData.property =
+          unit;
+
+        mesh.renderOrder = 5;
+
+        scene.add(mesh);
+
+        interactiveObjects.push(
+          mesh
+        );
+
+        /*
+         * Unit outline
+         */
+        const edges =
+          new THREE.EdgesGeometry(
+            geometry
+          );
+
+        const edgeColor =
+          hasVolumetricConflict
+            ? 0xff5555
+            : selected
+              ? 0xe879f9
+              : hovered
+                ? 0x67e8f9
+                : 0x94a3b8;
+
+        const edgeLines =
+          new THREE.LineSegments(
+            edges,
+            new THREE.LineBasicMaterial({
+              color: edgeColor,
+              transparent: true,
+              opacity:
+                selected ||
+                hovered ||
+                hasVolumetricConflict
+                  ? 1
+                  : 0.45
             })
           );
 
-        column.position.set(
-          x,
-          localMin + actualHeight / 2,
-          heroDepth / 2
-        );
+        edgeLines.renderOrder = 6;
 
-        column.castShadow = true;
-        scene.add(column);
-      });
-    });
-
-    /*
-     * Roof terrace + utility room.
-     */
-    if (selectedBuilding && floors.length > 0) {
-      const roofZ =
-        Math.max(
-          ...floors.map(
-            (floor) =>
-              floor.z_max_m -
-              groundElevation
-          )
-        );
-
-      const roof =
-        new THREE.Mesh(
-          new THREE.BoxGeometry(
-            heroWidth + 1.1,
-            0.32,
-            heroDepth + 1.1
-          ),
-          new THREE.MeshStandardMaterial({
-            color: 0x273244,
-            roughness: 0.76
-          })
-        );
-
-      roof.position.set(
-        0,
-        roofZ + 0.16,
-        0
-      );
-
-      roof.castShadow = true;
-      scene.add(roof);
-
-      const utility =
-        new THREE.Mesh(
-          new THREE.BoxGeometry(
-            5.5,
-            1.7,
-            4.2
-          ),
-          new THREE.MeshStandardMaterial({
-            color: 0x475569,
-            roughness: 0.78
-          })
-        );
-
-      utility.position.set(
-        0,
-        roofZ + 1.0,
-        0
-      );
-
-      utility.castShadow = true;
-      scene.add(utility);
-    }
+        scene.add(edgeLines);
+      }
+    );
 
     /*
      * ----------------------------------------------------------
@@ -1602,8 +805,8 @@ const Viewer3D: React.FC = () => {
               getInfrastructureFootprint(
                 infra.geometry_2d
               ),
-              infra.z_min_m - groundElevation,
-              infra.z_max_m - groundElevation,
+              infra.z_min_m,
+              infra.z_max_m,
               origin
             );
 
@@ -1642,8 +845,8 @@ const Viewer3D: React.FC = () => {
           const geometry =
             createExtrudedGeometry(
               footprint,
-              infra.z_min_m - groundElevation,
-              infra.z_max_m - groundElevation,
+              infra.z_min_m,
+              infra.z_max_m,
               origin
             );
 
@@ -1690,7 +893,8 @@ const Viewer3D: React.FC = () => {
 
           pillar.position.set(
             centroid.x - origin.x,
-            pillarHeight / 2,
+            groundElevation +
+              pillarHeight / 2,
             centroid.y - origin.y
           );
 
@@ -1760,7 +964,8 @@ const Viewer3D: React.FC = () => {
 
           mesh.position.set(
             x,
-            height / 2,
+            groundElevation +
+              height / 2,
             z
           );
 
@@ -1783,7 +988,8 @@ const Viewer3D: React.FC = () => {
 
           beacon.position.set(
             x,
-            height +
+            groundElevation +
+              height +
               1.2,
             z
           );
@@ -1815,13 +1021,12 @@ const Viewer3D: React.FC = () => {
           [
             new THREE.Vector3(
               zAxisX,
-              buildingMinZ - groundElevation,
+              buildingMinZ,
               0
             ),
             new THREE.Vector3(
               zAxisX,
-              buildingMinZ -
-                groundElevation +
+              buildingMinZ +
                 zAxisHeight,
               0
             )
@@ -1839,7 +1044,7 @@ const Viewer3D: React.FC = () => {
         new THREE.Vector3(0, 1, 0),
         new THREE.Vector3(
           zAxisX,
-          buildingMinZ - groundElevation,
+          buildingMinZ,
           0
         ),
         zAxisHeight,
@@ -1861,12 +1066,12 @@ const Viewer3D: React.FC = () => {
               [
                 new THREE.Vector3(
                   zAxisX - 1.5,
-                  floor.z_min_m - groundElevation,
+                  floor.z_min_m,
                   0
                 ),
                 new THREE.Vector3(
                   zAxisX + 1.5,
-                  floor.z_min_m - groundElevation,
+                  floor.z_min_m,
                   0
                 )
               ]
@@ -1886,78 +1091,71 @@ const Viewer3D: React.FC = () => {
      * ----------------------------------------------------------
      */
 
-    /*
-     * ----------------------------------------------------------
-     * CAMERA FIT
-     * ----------------------------------------------------------
-     * Frame the apartment society, not the huge grid.
-     */
+    const box =
+      new THREE.Box3();
 
-    const societyBox = new THREE.Box3();
+    scene.traverse(
+      (object) => {
+        if (
+          object instanceof THREE.Mesh ||
+          object instanceof THREE.LineSegments ||
+          object instanceof THREE.Line
+        ) {
+          box.expandByObject(
+            object
+          );
+        }
+      }
+    );
 
-    // Main selected building.
-    if (floors.length > 0) {
-      societyBox.expandByPoint(
-        new THREE.Vector3(
-          -20,
-          0,
-          -15
-        )
+    if (!box.isEmpty()) {
+      const center =
+        box.getCenter(
+          new THREE.Vector3()
+        );
+
+      const size =
+        box.getSize(
+          new THREE.Vector3()
+        );
+
+      const maxDimension =
+        Math.max(
+          size.x,
+          size.y,
+          size.z
+        );
+
+      cameraValuesRef.current.target.copy(
+        center
       );
-      societyBox.expandByPoint(
-        new THREE.Vector3(
-          65,
-          Math.max(18, buildingMaxZ - groundElevation),
-          45
-        )
-      );
+
+      cameraValuesRef.current.radius =
+        Math.max(
+          45,
+          maxDimension * 2.1
+        );
     }
 
-    const societyCenter = societyBox.getCenter(
-      new THREE.Vector3()
-    );
-
-    const societySize = societyBox.getSize(
-      new THREE.Vector3()
-    );
-
-    const cameraFitKey = [
-      selectedParcel?.id ?? 'no-parcel',
-      selectedBuilding?.id ?? 'no-building',
-      floors
-        .map(
-          (floor) =>
-            `${floor.id}:${floor.z_min_m}:${floor.z_max_m}`
-        )
-        .join('|')
-    ].join('::');
-
     /*
-     * Only auto-fit when the spatial subject changes.
-     * Hover, validation and floor highlighting must never reset
-     * the user's current zoom/rotation.
+     * Restore saved camera when applicable.
      */
     if (
-      cameraFitKeyRef.current !== cameraFitKey
+      cameraState &&
+      cameraState.propertyId ===
+        selectedProperty?.id
     ) {
-      cameraFitKeyRef.current = cameraFitKey;
+      cameraValuesRef.current.radius =
+        cameraState.radius;
+
+      cameraValuesRef.current.theta =
+        cameraState.theta;
+
+      cameraValuesRef.current.phi =
+        cameraState.phi;
 
       cameraValuesRef.current.target.set(
-        societyCenter.x,
-        Math.max(
-          6,
-          (buildingMaxZ - groundElevation) * 0.42
-        ),
-        societyCenter.z
-      );
-
-      cameraValuesRef.current.radius = Math.max(
-        62,
-        Math.max(
-          societySize.x,
-          societySize.y * 1.4,
-          societySize.z
-        ) * 1.45
+        ...cameraState.target
       );
     }
 
@@ -2042,19 +1240,9 @@ const Viewer3D: React.FC = () => {
             false
           );
 
-        if (!hits.length) {
-          return null;
-        }
-
-        // Units are the most important inspection target.
-        // If a floor shell overlaps a unit, prefer the unit hit.
-        const unitHit = hits.find(
-          (hit) =>
-            (hit.object as InteractiveObject)
-              .userData.targetType === 'unit'
-        );
-
-        return unitHit ?? hits[0];
+        return hits.length > 0
+          ? hits[0]
+          : null;
       };
 
     /*
@@ -2257,10 +1445,7 @@ const Viewer3D: React.FC = () => {
 
     const handlePointerDown =
       (event: MouseEvent) => {
-        if (
-          cameraLocked ||
-          event.button !== 0
-        ) {
+        if (event.button !== 0) {
           return;
         }
 
@@ -2286,10 +1471,6 @@ const Viewer3D: React.FC = () => {
           !dragRef.current.active
         ) {
           handleHover(event);
-          return;
-        }
-
-        if (cameraLocked) {
           return;
         }
 
@@ -2350,11 +1531,6 @@ const Viewer3D: React.FC = () => {
 
     const handleWheel =
       (event: WheelEvent) => {
-        if (cameraLocked) {
-          event.preventDefault();
-          return;
-        }
-
         event.preventDefault();
 
         cameraValuesRef.current.radius *=
@@ -2568,8 +1744,7 @@ const Viewer3D: React.FC = () => {
     viewerRevision,
     cameraState,
     selectPropertyById,
-    setSelectedFloorFilter,
-    cameraLocked
+    setSelectedFloorFilter
   ]);
 
   /*
@@ -2585,14 +1760,6 @@ const Viewer3D: React.FC = () => {
         'ALL'
       );
     };
-
-  const toggleCameraLock = () => {
-    dragRef.current.active = false;
-    dragRef.current.moved = false;
-    setCameraLocked(
-      (locked) => !locked
-    );
-  };
 
   /*
    * ------------------------------------------------------------
@@ -2657,27 +1824,6 @@ const Viewer3D: React.FC = () => {
             All Floors
           </button>
 
-          <button
-            onClick={toggleCameraLock}
-            title={
-              cameraLocked
-                ? 'Unlock camera to orbit and zoom'
-                : 'Lock current camera position'
-            }
-            className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs transition ${
-              cameraLocked
-                ? 'border-amber-400/40 bg-amber-500/15 text-amber-200'
-                : 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700'
-            }`}
-          >
-            {cameraLocked ? (
-              <Lock size={13} />
-            ) : (
-              <Unlock size={13} />
-            )}
-            {cameraLocked ? 'Locked' : 'Lock View'}
-          </button>
-
         </div>
       </div>
 
@@ -2689,24 +1835,6 @@ const Viewer3D: React.FC = () => {
         ref={mountRef}
         className="relative h-[500px] w-full"
       >
-
-        {selectedBuilding && (
-          <div className="pointer-events-none absolute bottom-16 left-1/2 z-20 -translate-x-1/2 rounded-lg border border-cyan-400/20 bg-slate-950/80 px-3 py-1.5 text-center backdrop-blur">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-cyan-300">
-              {selectedBuilding.name || selectedBuilding.building_code}
-            </div>
-            <div className="text-[8px] text-slate-500">
-              Selected cadastral building • surrounding blocks are demo context
-            </div>
-          </div>
-        )}
-
-        {cameraLocked && (
-          <div className="absolute left-3 top-3 z-20 flex items-center gap-1.5 rounded-lg border border-amber-400/30 bg-slate-950/85 px-2.5 py-1.5 text-[10px] text-amber-200 shadow-lg backdrop-blur">
-            <Lock size={11} />
-            Camera locked
-          </div>
-        )}
 
         {/* ====================================================
             HOVER TOOLTIP
