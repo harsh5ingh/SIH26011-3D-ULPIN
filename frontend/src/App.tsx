@@ -3,7 +3,7 @@ import React, {
   useState,
 } from "react";
 
-import { GeoVistaProvider } from "./context/GeoVistaContext";
+import { GeoVistaProvider } from "./context/GeoVISTAContext";
 import { Navbar } from "./components/Navbar";
 
 import { PublicPortal } from "./pages/PublicPortal";
