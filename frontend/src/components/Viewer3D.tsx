@@ -31,7 +31,7 @@ import {
   GripVertical,
   X
 } from 'lucide-react';
-import { useGeoVista } from '../context/GeoVistaContext';
+import { useGeoVista } from '../context/GeoVISTAContext';
 import {
   PropertyUnit,
   Floor,
