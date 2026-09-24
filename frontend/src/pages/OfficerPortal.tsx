@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useGeoVista } from '../context/GeoVistaContext';
+import { useGeoVista } from '../context/GeoVISTAContext';
 import { Viewer3D } from '../components/Viewer3D';
 import { ValidationBadge } from '../components/ValidationBadge';
 import { api } from '../services/api';
@@ -14,6 +14,20 @@ import {
   AlertTriangle,
   ChevronRight
 } from 'lucide-react';
+
+interface LidarAnalysisResponse {
+  estimated_height_m: number;
+  point_count: number;
+  confidence: number;
+}
+
+interface BuildingExtractionResponse {
+  confidence_score: number;
+  extracted_features: {
+    roof_type: string;
+    [key: string]: unknown;
+  };
+}
 
 export const OfficerPortal: React.FC = () => {
   const {
@@ -107,7 +121,7 @@ export const OfficerPortal: React.FC = () => {
     if (!selectedProperty) return;
     try {
       setLidarStatus('Running aerial point-cloud height estimation...');
-      const res = await api.analyzeLidar(selectedProperty.id);
+      const res = (await api.analyzeLidar(selectedProperty.id)) as LidarAnalysisResponse;
       setLidarStatus(
         `LiDAR Analysis Complete: Estimated height: ${res.estimated_height_m}m AMSL across ${res.point_count.toLocaleString()} returns (Confidence: ${res.confidence}%).`
       );
@@ -119,7 +133,7 @@ export const OfficerPortal: React.FC = () => {
   const runAIModules = async () => {
     try {
       setAiStatus('Running AI building extraction & floor segmentation...');
-      const res = await api.runBuildingExtraction('parcel-urban-001');
+      const res = (await api.runBuildingExtraction('parcel-urban-001')) as BuildingExtractionResponse;
       setAiStatus(
         `AI Analysis Complete: Extracted footprint with ${res.confidence_score}% confidence. Roof: ${res.extracted_features.roof_type}.`
       );

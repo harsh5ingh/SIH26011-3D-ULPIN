@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useGeoVista } from "../context/GeoVistaContext";
+import { useGeoVista } from "../context/GeoVISTAContext";
 import { Map2D } from "../components/Map2D";
 import { Viewer3D } from "../components/Viewer3D";
 import { EvidenceList } from "../components/EvidenceList";

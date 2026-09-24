@@ -22,6 +22,9 @@ import {
   MapPinned,
 } from "lucide-react";
 
+export type AuthMode = "signin" | "signup";
+export type PortalType = "public" | "officer";
+
 /* ==========================================================================
    TYPES
 ========================================================================== */

@@ -104,6 +104,53 @@ const clearAuth = (): void => {
 };
 
 /* ==========================================================================
+   API RESPONSE TYPES
+========================================================================== */
+
+export interface LidarAnalysisResponse {
+  estimated_height_m: number;
+  point_count: number;
+  confidence: number;
+  source_type: string;
+  floor_heights: number[];
+}
+
+export interface BuildingExtractionResponse {
+  confidence_score: number;
+  extracted_features: {
+    roof_type: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
+export interface FloorSegmentationResponse {
+  [key: string]: unknown;
+}
+
+export interface VerticalDelineationResponse {
+  [key: string]: unknown;
+}
+
+export interface RuralStructureCandidate {
+  detection_source: string;
+  estimated_height_m: number;
+  permanence_classification: string;
+  false_positive_reason?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
+export interface RuralCandidatesResponse {
+  candidates: RuralStructureCandidate[];
+}
+
+export interface SimulationResponse {
+  message?: string;
+  [key: string]: unknown;
+}
+
+/* ==========================================================================
    REQUEST TYPES
 ========================================================================== */
 
@@ -661,7 +708,7 @@ export const api = {
   analyzeLidar: (
     propertyId: string,
   ) =>
-    request<unknown>(
+    request<LidarAnalysisResponse>(
       "/api/lidar/analyze",
       {
         method: "POST",
@@ -678,7 +725,7 @@ export const api = {
   runBuildingExtraction: (
     parcelId: string,
   ) =>
-    request<unknown>(
+    request<BuildingExtractionResponse>(
       "/api/ai/building-extraction",
       {
         method: "POST",
@@ -691,7 +738,7 @@ export const api = {
   runFloorSegmentation: (
     buildingId: string,
   ) =>
-    request<unknown>(
+    request<FloorSegmentationResponse>(
       "/api/ai/floor-segmentation",
       {
         method: "POST",
@@ -704,7 +751,7 @@ export const api = {
   runVerticalDelineation: (
     buildingId: string,
   ) =>
-    request<unknown>(
+    request<VerticalDelineationResponse>(
       "/api/ai/vertical-delineation",
       {
         method: "POST",
@@ -729,7 +776,7 @@ export const api = {
     ),
 
   triggerSpatialError: () =>
-    request<unknown>(
+    request<SimulationResponse>(
       "/api/simulation/spatial-error",
       {
         method: "POST",
@@ -737,7 +784,7 @@ export const api = {
     ),
 
   triggerMissingEvidence: () =>
-    request<unknown>(
+    request<SimulationResponse>(
       "/api/simulation/missing-evidence",
       {
         method: "POST",
@@ -745,7 +792,7 @@ export const api = {
     ),
 
   triggerMultiSourceConflict: () =>
-    request<unknown>(
+    request<SimulationResponse>(
       "/api/simulation/multi-source-conflict",
       {
         method: "POST",
@@ -753,7 +800,7 @@ export const api = {
     ),
 
   getRuralCandidates: () =>
-    request<unknown>(
+    request<RuralCandidatesResponse>(
       "/api/simulation/rural-structure",
       {
         method: "POST",
@@ -771,8 +818,8 @@ export const api = {
       ),
 
   getRevisions:
-    (): Promise<unknown[]> =>
-      request<unknown[]>(
+    (): Promise<Record<string, unknown>[]> =>
+      request<Record<string, unknown>[]>(
         "/api/audit/revisions",
       ),
 };
@@ -786,6 +833,25 @@ export const authStorage = {
   getUser: getStoredUser,
   setAuth,
   clearAuth,
+};
+
+
+/* ==========================================================================
+   AUTH COMPATIBILITY EXPORTS
+========================================================================== */
+
+export type PortalType = "public" | "officer";
+export type AuthMode = "signin" | "signup";
+
+export const authApi = {
+  signup: api.signup,
+  signin: api.signin,
+  me: api.me,
+  logout: api.logout,
+};
+
+export const saveAuthSession = (data: AuthResponse): void => {
+  authStorage.setAuth(data);
 };
 
 export default api;

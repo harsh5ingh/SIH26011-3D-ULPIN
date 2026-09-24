@@ -39,6 +39,8 @@ htmlcov/
 backend/.env
 backend/src/data/users.json
 backend/src/data/user.json
+src/components/Viewer3D copy.tsx
+frontend/dist/
 
 # ---------- IDE / Editors ----------
 .vscode/

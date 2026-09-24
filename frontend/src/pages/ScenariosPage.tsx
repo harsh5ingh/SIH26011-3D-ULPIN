@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGeoVista } from '../context/GeoVistaContext';
+import { useGeoVista } from '../context/GeoVISTAContext';
 import { api } from '../services/api';
 import {
   Play,
@@ -14,6 +14,26 @@ import {
   Info
 } from 'lucide-react';
 
+interface LidarScenarioResponse {
+  estimated_height_m: number;
+  point_count: number;
+  confidence: number;
+  source_type: string;
+  floor_heights: number[];
+}
+
+interface RuralCandidate {
+  detection_source: string;
+  estimated_height_m: number;
+  permanence_classification: string;
+  false_positive_reason?: string;
+  status?: string;
+}
+
+interface RuralCandidatesResponse {
+  candidates: RuralCandidate[];
+}
+
 export const ScenariosPage: React.FC = () => {
   const {
     resetSimulation,
@@ -26,7 +46,7 @@ export const ScenariosPage: React.FC = () => {
     loading
   } = useGeoVista();
 
-  const [activeResult, setActiveResult] = useState<{ id: number; title: string; data: any } | null>(null);
+  const [activeResult, setActiveResult] = useState<{ id: number; title: string; data: Record<string, unknown> } | null>(null);
   const [resetMessage, setResetMessage] = useState<string | null>(null);
 
   const handleReset = async () => {
@@ -65,7 +85,7 @@ export const ScenariosPage: React.FC = () => {
         });
       } else if (id === 2) {
         // Scenario 2: Urban LiDAR Analysis
-        const lidar = await api.analyzeLidar('prop-b1-u101');
+        const lidar = (await api.analyzeLidar('prop-b1-u101')) as LidarScenarioResponse;
         setActiveResult({
           id: 2,
           title: 'Scenario 2: Urban LiDAR / Point Cloud Height Extraction',
@@ -142,8 +162,14 @@ export const ScenariosPage: React.FC = () => {
         const r2 = parcels.find((p) => p.parcel_code === 'R002');
         if (r2) await selectParcelById(r2.id);
 
-        const rural = await api.getRuralCandidates();
-        const perm = rural.candidates.find((c: any) => c.permanence_classification === 'LIKELY_PERMANENT');
+        const rural = (await api.getRuralCandidates()) as RuralCandidatesResponse;
+        const perm = rural.candidates.find(
+          (candidate) => candidate.permanence_classification === 'LIKELY_PERMANENT'
+        );
+
+        if (!perm) {
+          throw new Error('No likely-permanent rural candidate was returned by the API.');
+        }
 
         setActiveResult({
           id: 6,
@@ -162,8 +188,14 @@ export const ScenariosPage: React.FC = () => {
         const r3 = parcels.find((p) => p.parcel_code === 'R003');
         if (r3) await selectParcelById(r3.id);
 
-        const rural = await api.getRuralCandidates();
-        const temp = rural.candidates.find((c: any) => c.permanence_classification === 'LIKELY_TEMPORARY');
+        const rural = (await api.getRuralCandidates()) as RuralCandidatesResponse;
+        const temp = rural.candidates.find(
+          (candidate) => candidate.permanence_classification === 'LIKELY_TEMPORARY'
+        );
+
+        if (!temp) {
+          throw new Error('No likely-temporary rural candidate was returned by the API.');
+        }
 
         setActiveResult({
           id: 7,
