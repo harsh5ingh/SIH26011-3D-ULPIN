@@ -1,0 +1,2416 @@
+{
+  "parcels": [
+    {
+      "id": "parcel-urban-001",
+      "parcel_code": "P001",
+      "state": "Madhya Pradesh",
+      "district": "Bhopal",
+      "locality": "Arera Colony",
+      "village": null,
+      "area_sqm": 25469.125719183336,
+      "geometry_2d": [
+        [
+          77.412,
+          23.259
+        ],
+        [
+          77.4135,
+          23.259
+        ],
+        [
+          77.4135,
+          23.2605
+        ],
+        [
+          77.412,
+          23.2605
+        ],
+        [
+          77.412,
+          23.259
+        ]
+      ],
+      "land_use": "RESIDENTIAL_COMMERCIAL",
+      "area_type": "URBAN",
+      "status": "ACTIVE",
+      "metadata": {
+        "survey_number": "SY-104/A",
+        "zone": "Zone 4",
+        "fSI": 2.5
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "parcel-urban-003",
+      "parcel_code": "P003",
+      "state": "Madhya Pradesh",
+      "district": "Bhopal",
+      "locality": "MP Nagar",
+      "village": null,
+      "area_sqm": 25469.125719183336,
+      "geometry_2d": [
+        [
+          77.415,
+          23.259
+        ],
+        [
+          77.4165,
+          23.259
+        ],
+        [
+          77.4165,
+          23.2605
+        ],
+        [
+          77.415,
+          23.2605
+        ],
+        [
+          77.415,
+          23.259
+        ]
+      ],
+      "land_use": "TRANSPORT_CORRIDOR",
+      "area_type": "URBAN",
+      "status": "ACTIVE",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "parcel-urban-002",
+      "parcel_code": "P002",
+      "state": "Madhya Pradesh",
+      "district": "Bhopal",
+      "locality": "Arera Colony",
+      "village": null,
+      "area_sqm": 20375.300575394926,
+      "geometry_2d": [
+        [
+          77.4136,
+          23.259
+        ],
+        [
+          77.4148,
+          23.259
+        ],
+        [
+          77.4148,
+          23.2605
+        ],
+        [
+          77.4136,
+          23.2605
+        ],
+        [
+          77.4136,
+          23.259
+        ]
+      ],
+      "land_use": "COMMERCIAL",
+      "area_type": "URBAN",
+      "status": "ACTIVE",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "parcel-rural-001",
+      "parcel_code": "R001",
+      "state": "Madhya Pradesh",
+      "district": "Sehore",
+      "locality": "Ashta Tehsil",
+      "village": "Kothri Village",
+      "area_sqm": 283323.7980921594,
+      "geometry_2d": [
+        [
+          77.1,
+          23.1
+        ],
+        [
+          77.105,
+          23.1
+        ],
+        [
+          77.105,
+          23.105
+        ],
+        [
+          77.1,
+          23.105
+        ],
+        [
+          77.1,
+          23.1
+        ]
+      ],
+      "land_use": "AGRICULTURAL",
+      "area_type": "RURAL",
+      "status": "ACTIVE",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "parcel-rural-002",
+      "parcel_code": "R002",
+      "state": "Madhya Pradesh",
+      "district": "Sehore",
+      "locality": "Ashta Tehsil",
+      "village": "Kothri Village",
+      "area_sqm": 283323.7980921594,
+      "geometry_2d": [
+        [
+          77.106,
+          23.1
+        ],
+        [
+          77.111,
+          23.1
+        ],
+        [
+          77.111,
+          23.105
+        ],
+        [
+          77.106,
+          23.105
+        ],
+        [
+          77.106,
+          23.1
+        ]
+      ],
+      "land_use": "AGRICULTURAL_RESIDENTIAL",
+      "area_type": "RURAL",
+      "status": "ACTIVE",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "parcel-rural-003",
+      "parcel_code": "R003",
+      "state": "Madhya Pradesh",
+      "district": "Sehore",
+      "locality": "Ashta Tehsil",
+      "village": "Kothri Village",
+      "area_sqm": 283323.7980921594,
+      "geometry_2d": [
+        [
+          77.112,
+          23.1
+        ],
+        [
+          77.117,
+          23.1
+        ],
+        [
+          77.117,
+          23.105
+        ],
+        [
+          77.112,
+          23.105
+        ],
+        [
+          77.112,
+          23.1
+        ]
+      ],
+      "land_use": "AGRICULTURAL",
+      "area_type": "RURAL",
+      "status": "ACTIVE",
+      "metadata": {},
+      "is_synthetic": true
+    }
+  ],
+  "buildings": [
+    {
+      "id": "bld-urban-001",
+      "building_code": "B01",
+      "parcel_id": "parcel-urban-001",
+      "name": "Navkar Heights Apartment",
+      "total_floors": 5,
+      "basement_floors": 1,
+      "footprint_2d": [
+        [
+          77.4123,
+          23.2593
+        ],
+        [
+          77.413,
+          23.2593
+        ],
+        [
+          77.413,
+          23.26
+        ],
+        [
+          77.4123,
+          23.26
+        ],
+        [
+          77.4123,
+          23.2593
+        ]
+      ],
+      "ground_elevation_m": 500.0,
+      "total_height_m": 18.0,
+      "structure_type": "RCC_FRAME_MULTI_STOREY",
+      "status": "ACTIVE",
+      "metadata": {
+        "completion_year": 2022,
+        "builder": "Navkar Realties",
+        "fire_noc": true
+      }
+    },
+    {
+      "id": "bld-urban-002",
+      "building_code": "B02",
+      "parcel_id": "parcel-urban-002",
+      "name": "Vardhman Commercial Complex",
+      "total_floors": 3,
+      "basement_floors": 0,
+      "footprint_2d": [
+        [
+          77.4138,
+          23.2592
+        ],
+        [
+          77.4145,
+          23.2592
+        ],
+        [
+          77.4145,
+          23.2602
+        ],
+        [
+          77.4138,
+          23.2602
+        ],
+        [
+          77.4138,
+          23.2592
+        ]
+      ],
+      "ground_elevation_m": 500.0,
+      "total_height_m": 12.0,
+      "structure_type": "COMMERCIAL_STEEL_GLASS",
+      "status": "ACTIVE",
+      "metadata": {
+        "completion_year": 2023
+      }
+    }
+  ],
+  "floors": [
+    {
+      "id": "floor-b1--1",
+      "building_id": "bld-urban-001",
+      "floor_number": -1,
+      "floor_name": "Basement Parking",
+      "z_min_m": 497.0,
+      "z_max_m": 500.0,
+      "height_m": 3.0,
+      "unit_count": 1
+    },
+    {
+      "id": "floor-b1-0",
+      "building_id": "bld-urban-001",
+      "floor_number": 0,
+      "floor_name": "Ground Floor / Retail",
+      "z_min_m": 500.0,
+      "z_max_m": 503.5,
+      "height_m": 3.5,
+      "unit_count": 2
+    },
+    {
+      "id": "floor-b1-1",
+      "building_id": "bld-urban-001",
+      "floor_number": 1,
+      "floor_name": "First Floor",
+      "z_min_m": 503.5,
+      "z_max_m": 507.0,
+      "height_m": 3.5,
+      "unit_count": 2
+    },
+    {
+      "id": "floor-b1-2",
+      "building_id": "bld-urban-001",
+      "floor_number": 2,
+      "floor_name": "Second Floor",
+      "z_min_m": 507.0,
+      "z_max_m": 510.5,
+      "height_m": 3.5,
+      "unit_count": 2
+    },
+    {
+      "id": "floor-b1-3",
+      "building_id": "bld-urban-001",
+      "floor_number": 3,
+      "floor_name": "Third Floor",
+      "z_min_m": 510.5,
+      "z_max_m": 514.0,
+      "height_m": 3.5,
+      "unit_count": 2
+    },
+    {
+      "id": "floor-b1-4",
+      "building_id": "bld-urban-001",
+      "floor_number": 4,
+      "floor_name": "Fourth Floor",
+      "z_min_m": 514.0,
+      "z_max_m": 517.5,
+      "height_m": 3.5,
+      "unit_count": 2
+    },
+    {
+      "id": "floor-b2-0",
+      "building_id": "bld-urban-002",
+      "floor_number": 0,
+      "floor_name": "Floor 0",
+      "z_min_m": 500.0,
+      "z_max_m": 504.0,
+      "height_m": 4.0,
+      "unit_count": 1
+    },
+    {
+      "id": "floor-b2-1",
+      "building_id": "bld-urban-002",
+      "floor_number": 1,
+      "floor_name": "Floor 1",
+      "z_min_m": 504.0,
+      "z_max_m": 508.0,
+      "height_m": 4.0,
+      "unit_count": 1
+    },
+    {
+      "id": "floor-b2-2",
+      "building_id": "bld-urban-002",
+      "floor_number": 2,
+      "floor_name": "Floor 2",
+      "z_min_m": 508.0,
+      "z_max_m": 512.0,
+      "height_m": 4.0,
+      "unit_count": 1
+    }
+  ],
+  "units": [
+    {
+      "id": "prop-b1-u101",
+      "property_code": "P001-B01-F1-U101",
+      "parcel_id": "parcel-urban-001",
+      "building_id": "bld-urban-001",
+      "floor_id": "floor-b1-1",
+      "floor_number": 1,
+      "unit_number": "101",
+      "unit_type": "RESIDENTIAL",
+      "z_min_m": 503.5,
+      "z_max_m": 507.0,
+      "footprint_2d": [
+        [
+          77.4123,
+          23.2593
+        ],
+        [
+          77.41265,
+          23.2593
+        ],
+        [
+          77.41265,
+          23.26
+        ],
+        [
+          77.4123,
+          23.26
+        ],
+        [
+          77.4123,
+          23.2593
+        ]
+      ],
+      "area_sqm": 2773.305216639259,
+      "proposed_3d_id": "IN-MP-BPL-P001-B01-F01-U01",
+      "verification_status": "APPROVED",
+      "technical_confidence": 94.2,
+      "primary_use": "3-BHK Residential Flat",
+      "revision_number": 1,
+      "under_review_note": null,
+      "is_synthetic": true
+    },
+    {
+      "id": "prop-b1-u102",
+      "property_code": "P001-B01-F1-U102",
+      "parcel_id": "parcel-urban-001",
+      "building_id": "bld-urban-001",
+      "floor_id": "floor-b1-1",
+      "floor_number": 1,
+      "unit_number": "102",
+      "unit_type": "RESIDENTIAL",
+      "z_min_m": 503.5,
+      "z_max_m": 507.0,
+      "footprint_2d": [
+        [
+          77.41265,
+          23.2593
+        ],
+        [
+          77.413,
+          23.2593
+        ],
+        [
+          77.413,
+          23.26
+        ],
+        [
+          77.41265,
+          23.26
+        ],
+        [
+          77.41265,
+          23.2593
+        ]
+      ],
+      "area_sqm": 2773.305216639259,
+      "proposed_3d_id": "IN-MP-BPL-P001-B01-F01-U02",
+      "verification_status": "APPROVED",
+      "technical_confidence": 95.0,
+      "primary_use": "3-BHK Residential Flat",
+      "revision_number": 1,
+      "under_review_note": null,
+      "is_synthetic": true
+    },
+    {
+      "id": "prop-b1-u201",
+      "property_code": "P001-B01-F2-U201",
+      "parcel_id": "parcel-urban-001",
+      "building_id": "bld-urban-001",
+      "floor_id": "floor-b1-2",
+      "floor_number": 2,
+      "unit_number": "201",
+      "unit_type": "RESIDENTIAL",
+      "z_min_m": 507.0,
+      "z_max_m": 510.5,
+      "footprint_2d": [
+        [
+          77.4123,
+          23.2593
+        ],
+        [
+          77.41265,
+          23.2593
+        ],
+        [
+          77.41265,
+          23.26
+        ],
+        [
+          77.4123,
+          23.26
+        ],
+        [
+          77.4123,
+          23.2593
+        ]
+      ],
+      "area_sqm": 2773.305216639259,
+      "proposed_3d_id": "IN-MP-BPL-P001-B01-F02-U01",
+      "verification_status": "APPROVED",
+      "technical_confidence": 92.8,
+      "primary_use": "3-BHK Residential Flat",
+      "revision_number": 1,
+      "under_review_note": null,
+      "is_synthetic": true
+    },
+    {
+      "id": "prop-b1-u202",
+      "property_code": "P001-B01-F2-U202",
+      "parcel_id": "parcel-urban-001",
+      "building_id": "bld-urban-001",
+      "floor_id": "floor-b1-2",
+      "floor_number": 2,
+      "unit_number": "202",
+      "unit_type": "RESIDENTIAL",
+      "z_min_m": 507.0,
+      "z_max_m": 510.5,
+      "footprint_2d": [
+        [
+          77.41265,
+          23.2593
+        ],
+        [
+          77.413,
+          23.2593
+        ],
+        [
+          77.413,
+          23.26
+        ],
+        [
+          77.41265,
+          23.26
+        ],
+        [
+          77.41265,
+          23.2593
+        ]
+      ],
+      "area_sqm": 2773.305216639259,
+      "proposed_3d_id": "IN-MP-BPL-P001-B01-F02-U02",
+      "verification_status": "APPROVED",
+      "technical_confidence": 93.5,
+      "primary_use": "3-BHK Residential Flat",
+      "revision_number": 1,
+      "under_review_note": null,
+      "is_synthetic": true
+    },
+    {
+      "id": "prop-b1-u301",
+      "property_code": "P001-B01-F3-U301",
+      "parcel_id": "parcel-urban-001",
+      "building_id": "bld-urban-001",
+      "floor_id": "floor-b1-3",
+      "floor_number": 3,
+      "unit_number": "301",
+      "unit_type": "RESIDENTIAL",
+      "z_min_m": 510.5,
+      "z_max_m": 514.0,
+      "footprint_2d": [
+        [
+          77.4123,
+          23.2593
+        ],
+        [
+          77.41265,
+          23.2593
+        ],
+        [
+          77.41265,
+          23.26
+        ],
+        [
+          77.4123,
+          23.26
+        ],
+        [
+          77.4123,
+          23.2593
+        ]
+      ],
+      "area_sqm": 2773.305216639259,
+      "proposed_3d_id": "IN-MP-BPL-P001-B01-F03-U01",
+      "verification_status": "UNDER_REVIEW",
+      "technical_confidence": 81.5,
+      "primary_use": "3-BHK Residential Flat",
+      "revision_number": 1,
+      "under_review_note": "Official review in progress",
+      "is_synthetic": true
+    },
+    {
+      "id": "prop-b1-u302",
+      "property_code": "P001-B01-F3-U302",
+      "parcel_id": "parcel-urban-001",
+      "building_id": "bld-urban-001",
+      "floor_id": "floor-b1-3",
+      "floor_number": 3,
+      "unit_number": "302",
+      "unit_type": "RESIDENTIAL",
+      "z_min_m": 512.5,
+      "z_max_m": 516.0,
+      "footprint_2d": [
+        [
+          77.4123,
+          23.2593
+        ],
+        [
+          77.413,
+          23.2593
+        ],
+        [
+          77.413,
+          23.26
+        ],
+        [
+          77.4123,
+          23.26
+        ],
+        [
+          77.4123,
+          23.2593
+        ]
+      ],
+      "area_sqm": 5546.610433278518,
+      "proposed_3d_id": "IN-MP-BPL-P001-B01-F03-U02",
+      "verification_status": "CORRECTION_REQUIRED",
+      "technical_confidence": 62.0,
+      "primary_use": "3-BHK Residential Flat",
+      "revision_number": 1,
+      "under_review_note": "Official review in progress",
+      "is_synthetic": true
+    },
+    {
+      "id": "prop-b1-u401",
+      "property_code": "P001-B01-F4-U401",
+      "parcel_id": "parcel-urban-001",
+      "building_id": "bld-urban-001",
+      "floor_id": "floor-b1-4",
+      "floor_number": 4,
+      "unit_number": "401",
+      "unit_type": "RESIDENTIAL",
+      "z_min_m": 517.5,
+      "z_max_m": 521.0,
+      "footprint_2d": [
+        [
+          77.4123,
+          23.2593
+        ],
+        [
+          77.41265,
+          23.2593
+        ],
+        [
+          77.41265,
+          23.26
+        ],
+        [
+          77.4123,
+          23.26
+        ],
+        [
+          77.4123,
+          23.2593
+        ]
+      ],
+      "area_sqm": 2773.305216639259,
+      "proposed_3d_id": "IN-MP-BPL-P001-B01-F04-U01",
+      "verification_status": "APPROVED",
+      "technical_confidence": 91.0,
+      "primary_use": "3-BHK Residential Flat",
+      "revision_number": 1,
+      "under_review_note": null,
+      "is_synthetic": true
+    },
+    {
+      "id": "prop-b1-u402",
+      "property_code": "P001-B01-F4-U402",
+      "parcel_id": "parcel-urban-001",
+      "building_id": "bld-urban-001",
+      "floor_id": "floor-b1-4",
+      "floor_number": 4,
+      "unit_number": "402",
+      "unit_type": "RESIDENTIAL",
+      "z_min_m": 517.5,
+      "z_max_m": 521.0,
+      "footprint_2d": [
+        [
+          77.41265,
+          23.2593
+        ],
+        [
+          77.413,
+          23.2593
+        ],
+        [
+          77.413,
+          23.26
+        ],
+        [
+          77.41265,
+          23.26
+        ],
+        [
+          77.41265,
+          23.2593
+        ]
+      ],
+      "area_sqm": 2773.305216639259,
+      "proposed_3d_id": "IN-MP-BPL-P001-B01-F04-U02",
+      "verification_status": "APPROVED",
+      "technical_confidence": 92.0,
+      "primary_use": "3-BHK Residential Flat",
+      "revision_number": 1,
+      "under_review_note": null,
+      "is_synthetic": true
+    },
+    {
+      "id": "prop-b2-u001",
+      "property_code": "P002-B02-F0-U01",
+      "parcel_id": "parcel-urban-002",
+      "building_id": "bld-urban-002",
+      "floor_id": "floor-b2-0",
+      "floor_number": 0,
+      "unit_number": "001",
+      "unit_type": "COMMERCIAL",
+      "z_min_m": 500.0,
+      "z_max_m": 504.0,
+      "footprint_2d": [
+        [
+          77.4138,
+          23.2592
+        ],
+        [
+          77.4145,
+          23.2592
+        ],
+        [
+          77.4145,
+          23.2602
+        ],
+        [
+          77.4138,
+          23.2602
+        ],
+        [
+          77.4138,
+          23.2592
+        ]
+      ],
+      "area_sqm": 7923.728001672501,
+      "proposed_3d_id": "IN-MP-BPL-P002-B02-F00-U01",
+      "verification_status": "APPROVED",
+      "technical_confidence": 96.0,
+      "primary_use": "Commercial Office Space",
+      "revision_number": 1,
+      "under_review_note": null,
+      "is_synthetic": true
+    },
+    {
+      "id": "prop-b2-u101",
+      "property_code": "P002-B02-F1-U01",
+      "parcel_id": "parcel-urban-002",
+      "building_id": "bld-urban-002",
+      "floor_id": "floor-b2-1",
+      "floor_number": 1,
+      "unit_number": "101",
+      "unit_type": "COMMERCIAL",
+      "z_min_m": 504.0,
+      "z_max_m": 508.0,
+      "footprint_2d": [
+        [
+          77.4138,
+          23.2592
+        ],
+        [
+          77.4145,
+          23.2592
+        ],
+        [
+          77.4145,
+          23.2602
+        ],
+        [
+          77.4138,
+          23.2602
+        ],
+        [
+          77.4138,
+          23.2592
+        ]
+      ],
+      "area_sqm": 7923.728001672501,
+      "proposed_3d_id": "IN-MP-BPL-P002-B02-F01-U01",
+      "verification_status": "APPROVED",
+      "technical_confidence": 96.0,
+      "primary_use": "Commercial Office Space",
+      "revision_number": 1,
+      "under_review_note": null,
+      "is_synthetic": true
+    },
+    {
+      "id": "prop-b2-u201",
+      "property_code": "P002-B02-F2-U01",
+      "parcel_id": "parcel-urban-002",
+      "building_id": "bld-urban-002",
+      "floor_id": "floor-b2-2",
+      "floor_number": 2,
+      "unit_number": "201",
+      "unit_type": "COMMERCIAL",
+      "z_min_m": 508.0,
+      "z_max_m": 512.0,
+      "footprint_2d": [
+        [
+          77.4138,
+          23.2592
+        ],
+        [
+          77.4145,
+          23.2592
+        ],
+        [
+          77.4145,
+          23.2602
+        ],
+        [
+          77.4138,
+          23.2602
+        ],
+        [
+          77.4138,
+          23.2592
+        ]
+      ],
+      "area_sqm": 7923.728001672501,
+      "proposed_3d_id": "IN-MP-BPL-P002-B02-F02-U01",
+      "verification_status": "APPROVED",
+      "technical_confidence": 96.0,
+      "primary_use": "Commercial Office Space",
+      "revision_number": 1,
+      "under_review_note": null,
+      "is_synthetic": true
+    }
+  ],
+  "underground": [
+    {
+      "id": "infra-ug-001",
+      "parcel_id": "parcel-urban-001",
+      "infrastructure_code": "UG-PARK-01",
+      "name": "Navkar Underground Basement Parking",
+      "type": "BASEMENT_PARKING",
+      "z_min_m": 495.0,
+      "z_max_m": 500.0,
+      "geometry_2d": [
+        [
+          77.4123,
+          23.2593
+        ],
+        [
+          77.413,
+          23.2593
+        ],
+        [
+          77.413,
+          23.26
+        ],
+        [
+          77.4123,
+          23.26
+        ],
+        [
+          77.4123,
+          23.2593
+        ]
+      ],
+      "verification_status": "APPROVED",
+      "proposed_3d_id": "IN-MP-BPL-P001-UG-PARK-01",
+      "metadata": {
+        "capacity_cars": 24,
+        "ventilation": "MECHANICAL"
+      }
+    }
+  ],
+  "elevated": [
+    {
+      "id": "infra-ev-001",
+      "parcel_id": "parcel-urban-003",
+      "infrastructure_code": "EV-METRO-01",
+      "name": "Bhopal Metro Elevated Corridor Line 1",
+      "type": "ELEVATED_METRO",
+      "z_min_m": 512.0,
+      "z_max_m": 518.0,
+      "geometry_2d": [
+        [
+          77.415,
+          23.2597
+        ],
+        [
+          77.4165,
+          23.2597
+        ],
+        [
+          77.4165,
+          23.2599
+        ],
+        [
+          77.415,
+          23.2599
+        ],
+        [
+          77.415,
+          23.2597
+        ]
+      ],
+      "verification_status": "APPROVED",
+      "proposed_3d_id": "IN-MP-BPL-P003-EV-METRO-01",
+      "metadata": {
+        "operator": "MPMRCL",
+        "clearance_m": 8.5
+      }
+    }
+  ],
+  "evidences": [
+    {
+      "id": "84eca3a5-0e95-452b-8eac-c6d8d6adb2c2",
+      "object_id": "prop-b1-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "059ed5d7-cb05-4e51-a1ab-c23ddcaa502f",
+      "object_id": "prop-b1-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "7104c9e1-2c24-4d35-9cf3-ed20b3d00082",
+      "object_id": "prop-b1-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "dbef9ff1-bdd0-4e12-9575-27d8bf64794e",
+      "object_id": "prop-b1-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "4ffcc582-c523-4881-8915-dbc1a686749b",
+      "object_id": "prop-b1-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "554e6711-ed14-4110-a864-130ffc6c1df5",
+      "object_id": "prop-b1-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "8fc5b501-1d69-4354-8b5a-358d298f3c32",
+      "object_id": "prop-b1-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "1cb429a9-efec-4bac-9e23-428b634cfd0b",
+      "object_id": "prop-b1-u102",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "62fbcbfb-6309-4080-a994-5ca2e3b9ba60",
+      "object_id": "prop-b1-u102",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "6bd8c504-b373-44e2-8cdc-57f7cb51a517",
+      "object_id": "prop-b1-u102",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "dff6c891-e80c-47c1-ae03-7b8210c9f56a",
+      "object_id": "prop-b1-u102",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "cd8d2acd-1f6e-443a-9f03-8982d8e77c7a",
+      "object_id": "prop-b1-u102",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "fa1bd319-fc66-4834-94cd-f0df2c1035ac",
+      "object_id": "prop-b1-u102",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "7d1a9a0d-8f63-4180-9c55-99ee67efe00a",
+      "object_id": "prop-b1-u102",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "7b6ec1a7-e9f2-4459-a338-79e73a9a6d7e",
+      "object_id": "prop-b1-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "d0269cb4-0d2d-4f7d-a431-631e8a2e9b1b",
+      "object_id": "prop-b1-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "6bfb5ec1-eb14-4144-b00a-47ea773d9079",
+      "object_id": "prop-b1-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "8489685d-1394-462b-823e-828949b1a955",
+      "object_id": "prop-b1-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "6e8f090b-7b57-4d80-91be-2800c6b835f1",
+      "object_id": "prop-b1-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "dffdd7f1-c548-4bbf-9d59-6759d27d8867",
+      "object_id": "prop-b1-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "1df990ea-8446-408e-9160-d695d82df263",
+      "object_id": "prop-b1-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "00446a49-a6fb-4761-a52f-2935ac12d7b1",
+      "object_id": "prop-b1-u202",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "41b771d2-3d3f-4c47-ba1f-b6c69b2caacc",
+      "object_id": "prop-b1-u202",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "042f73be-17d6-4f1d-a06e-c6820094b2f4",
+      "object_id": "prop-b1-u202",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "f2a942ef-6b94-4973-af80-a1b77d19b94b",
+      "object_id": "prop-b1-u202",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "fd0998d4-7ad1-4839-9ca7-a4085eb862d1",
+      "object_id": "prop-b1-u202",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "2a215491-c6cd-4895-aedd-b8bfc7c6730b",
+      "object_id": "prop-b1-u202",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "88d847bb-3512-4169-a683-c38e2ddc86ac",
+      "object_id": "prop-b1-u202",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "b3862775-027c-4d9d-9704-6c0dea66bf12",
+      "object_id": "prop-b1-u301",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "9acc3d61-5c10-45a2-90a5-75f81bb3db49",
+      "object_id": "prop-b1-u301",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "393cccfb-4aaf-4980-b7fc-b06efb60423f",
+      "object_id": "prop-b1-u301",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "1d7da43e-2b7e-4e39-b42a-1ffd57e544a7",
+      "object_id": "prop-b1-u301",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "99d97982-74e2-4ebe-92b2-09746222a988",
+      "object_id": "prop-b1-u301",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "bd66d119-140c-42aa-8246-7cd6d80f6790",
+      "object_id": "prop-b1-u301",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "0ed54b2d-58a2-4349-adc1-5bab854c36de",
+      "object_id": "prop-b1-u301",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "11f8fd88-0bca-47d8-bb22-8ff82a111b4f",
+      "object_id": "prop-b1-u302",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "b294de67-9c8c-4c23-ba28-48dbdbb445c5",
+      "object_id": "prop-b1-u302",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "d98a9acf-6aa2-4eea-87fc-95bb251922e8",
+      "object_id": "prop-b1-u302",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "308ddc8b-0866-4df9-b38b-e2c9e2922927",
+      "object_id": "prop-b1-u302",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "ddd6f9a3-a0e8-42f1-82e1-58047361d9e6",
+      "object_id": "prop-b1-u302",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "152100f3-7b8f-4ab9-8b14-3416df7d46e0",
+      "object_id": "prop-b1-u302",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "a85a5ee1-d694-4471-a222-3fdb0d9ece16",
+      "object_id": "prop-b1-u302",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "8f490c4f-fa81-4a89-9a36-c8b8fef40e89",
+      "object_id": "prop-b1-u401",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "13158627-7d4e-49ee-9a11-c0fa20580d1c",
+      "object_id": "prop-b1-u401",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "31fa6c1f-61b3-44ee-b2f9-f9ca35eeacde",
+      "object_id": "prop-b1-u401",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "82a598b4-e7a7-4dc2-94c9-07613b241d6a",
+      "object_id": "prop-b1-u401",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "0bafd1c9-3519-4160-9a4a-8b403ea709e0",
+      "object_id": "prop-b1-u401",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "be7ee284-aa38-4306-b323-5f808c767724",
+      "object_id": "prop-b1-u401",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "864cf760-6b2a-47cb-936b-c71183723974",
+      "object_id": "prop-b1-u401",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "cbba630e-33a9-4b37-b363-393e7309bdc1",
+      "object_id": "prop-b1-u402",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "20a4bafe-c900-470e-8309-acb0ca837b44",
+      "object_id": "prop-b1-u402",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "091c74de-2e3a-474a-b0c1-fb2bd860ed85",
+      "object_id": "prop-b1-u402",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "d67b5e00-4c65-4d5e-b175-b2f74033c1f1",
+      "object_id": "prop-b1-u402",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 18.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "ae49809e-b12c-4ffd-80cf-c22574f99826",
+      "object_id": "prop-b1-u402",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "479c5a26-7ba9-41f3-bf7b-037b0e999e2c",
+      "object_id": "prop-b1-u402",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "771e8eca-7aca-4d7d-a736-917be65f51bc",
+      "object_id": "prop-b1-u402",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "1bf61e9b-a2fb-4690-9474-7d39bca3a341",
+      "object_id": "prop-b2-u001",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "95aff22b-b84e-4c4a-86c6-6389a9961711",
+      "object_id": "prop-b2-u001",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "68ba7866-a7ae-4b63-a852-81da2bb0d608",
+      "object_id": "prop-b2-u001",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 12.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "1c7df12a-e284-4183-ac5b-feb3f74319b7",
+      "object_id": "prop-b2-u001",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 12.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "78b993e5-7930-4c68-bec8-865f607a148d",
+      "object_id": "prop-b2-u001",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "227a8d42-96cb-4904-a215-d488d8ebcf10",
+      "object_id": "prop-b2-u001",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "b1f5aab4-40a7-4d00-937a-04217791fa9f",
+      "object_id": "prop-b2-u001",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "8ae21002-56ce-4366-a84a-db8c875df4e0",
+      "object_id": "prop-b2-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "44bf7d1a-74f3-4fa7-a8e5-36434afc0839",
+      "object_id": "prop-b2-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "0a78d45e-eb84-4817-847e-57130f130856",
+      "object_id": "prop-b2-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 12.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "fb85a711-e8c1-499f-a5e4-2c668e7dba7e",
+      "object_id": "prop-b2-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 12.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "db5235c0-e6f3-496c-b3f4-6fcc672252d5",
+      "object_id": "prop-b2-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "2f6c984e-4884-45d9-ba05-b2b1d89ff39d",
+      "object_id": "prop-b2-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "5c8d69f9-4f21-4639-9c48-a51c4f65113e",
+      "object_id": "prop-b2-u101",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "070a24aa-321c-454b-a5a9-8afc0f9e50da",
+      "object_id": "prop-b2-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR GIS Cadastral Layer 2024",
+      "acquisition_date": "2024-01-15",
+      "processing_method": "VECTOR_DIGITIZATION",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "92a31c3e-22c3-429d-8017-68e1f809c97e",
+      "object_id": "prop-b2-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Drone Orthomosaic Flight #DR-402",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "65b9b47c-dc14-4b1e-a0e9-f3e2e194d628",
+      "object_id": "prop-b2-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "LIDAR",
+      "source_reference": "Aerial LiDAR Cloud #LD-992",
+      "acquisition_date": "2024-02-12",
+      "processing_method": "POINT_CLOUD_HEIGHT_EXTRACTION",
+      "quality_score": 94.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 12.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "2dbc6012-ef4e-4c37-8a27-f5fea2a3420b",
+      "object_id": "prop-b2-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "FLOOR_PLAN",
+      "source_reference": "Approved Architectural CAD Floor Plan Rev 3",
+      "acquisition_date": "2022-06-20",
+      "processing_method": "VECTOR_CAD_IMPORT",
+      "quality_score": 92.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "estimated_building_height_m": 12.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "316e6ba7-36ab-46d0-8ef9-250abd2e5b32",
+      "object_id": "prop-b2-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "GNSS_CORS",
+      "source_reference": "Survey of India CORS Network Station BHOP-01",
+      "acquisition_date": "2024-03-01",
+      "processing_method": "RTK_GNSS_FIX",
+      "quality_score": 99.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "station_id": "BHOP-01",
+        "accuracy_cm": 1.2
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "793de16c-ae26-42cd-84f1-b128e92e755f",
+      "object_id": "prop-b2-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "DEM",
+      "source_reference": "National Elevation Model DEM 1m",
+      "acquisition_date": "2023-11-00",
+      "processing_method": "RASTER_SURFACE_INTERPOLATION",
+      "quality_score": 90.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "8613f79f-912a-4d6c-8a4f-4e83647e4a42",
+      "object_id": "prop-b2-u201",
+      "object_type": "PropertyUnit",
+      "source_type": "DSM",
+      "source_reference": "Surface Elevation Model DSM 0.5m",
+      "acquisition_date": "2024-02-10",
+      "processing_method": "RASTER_SURFACE_EXTRACTION",
+      "quality_score": 91.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "aefd9eae-ea5c-43c4-a7d8-c8f2d3a45ccd",
+      "object_id": "parcel-urban-001",
+      "object_type": "Parcel",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR State Cadastral Boundary Layer (P001)",
+      "acquisition_date": "2024-01-10",
+      "processing_method": "VECTOR_SURVEY_POLYGON",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "98cb736a-ce31-4725-8c56-97dd41952fb1",
+      "object_id": "parcel-urban-001",
+      "object_type": "Parcel",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Aerial Orthomosaic 5cm (P001)",
+      "acquisition_date": "2024-02-05",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 96.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "e3aed9f9-ee62-4e42-94f4-7f25472e504a",
+      "object_id": "parcel-urban-001",
+      "object_type": "Parcel",
+      "source_type": "DEM",
+      "source_reference": "Survey of India Ground DEM 1m (Arera Colony)",
+      "acquisition_date": "2023-11-15",
+      "processing_method": "RASTER_TERRAIN_SURFACE",
+      "quality_score": 93.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "8139bb14-3e00-40c1-a2da-21d77537b47d",
+      "object_id": "parcel-urban-003",
+      "object_type": "Parcel",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR State Cadastral Boundary Layer (P003)",
+      "acquisition_date": "2024-01-10",
+      "processing_method": "VECTOR_SURVEY_POLYGON",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "e561d0d5-3ade-41d9-a565-9b68d2324378",
+      "object_id": "parcel-urban-003",
+      "object_type": "Parcel",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Aerial Orthomosaic 5cm (P003)",
+      "acquisition_date": "2024-02-05",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 96.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "d4603714-d2b8-46a6-8a4c-6161028a5ff0",
+      "object_id": "parcel-urban-003",
+      "object_type": "Parcel",
+      "source_type": "DEM",
+      "source_reference": "Survey of India Ground DEM 1m (MP Nagar)",
+      "acquisition_date": "2023-11-15",
+      "processing_method": "RASTER_TERRAIN_SURFACE",
+      "quality_score": 93.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "50db63d9-4793-4b4b-84bc-258df4d4f672",
+      "object_id": "parcel-urban-002",
+      "object_type": "Parcel",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR State Cadastral Boundary Layer (P002)",
+      "acquisition_date": "2024-01-10",
+      "processing_method": "VECTOR_SURVEY_POLYGON",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "8d762b66-f564-4754-9d4b-4fc750020e83",
+      "object_id": "parcel-urban-002",
+      "object_type": "Parcel",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Aerial Orthomosaic 5cm (P002)",
+      "acquisition_date": "2024-02-05",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 96.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "30e14e86-0e60-467c-bbed-dff0787eb454",
+      "object_id": "parcel-urban-002",
+      "object_type": "Parcel",
+      "source_type": "DEM",
+      "source_reference": "Survey of India Ground DEM 1m (Arera Colony)",
+      "acquisition_date": "2023-11-15",
+      "processing_method": "RASTER_TERRAIN_SURFACE",
+      "quality_score": 93.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "26a31f4b-cbde-418f-a22d-5ea5063ec20c",
+      "object_id": "parcel-rural-001",
+      "object_type": "Parcel",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR State Cadastral Boundary Layer (R001)",
+      "acquisition_date": "2024-01-10",
+      "processing_method": "VECTOR_SURVEY_POLYGON",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "e5e2152c-b4ea-4203-bad3-2583ac67facb",
+      "object_id": "parcel-rural-001",
+      "object_type": "Parcel",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Aerial Orthomosaic 5cm (R001)",
+      "acquisition_date": "2024-02-05",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 96.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "09247613-851f-43b8-96f3-c4c891d02108",
+      "object_id": "parcel-rural-001",
+      "object_type": "Parcel",
+      "source_type": "DEM",
+      "source_reference": "Survey of India Ground DEM 1m (Ashta Tehsil)",
+      "acquisition_date": "2023-11-15",
+      "processing_method": "RASTER_TERRAIN_SURFACE",
+      "quality_score": 93.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "05dbb539-aec9-489d-b32c-8af3224a7645",
+      "object_id": "parcel-rural-002",
+      "object_type": "Parcel",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR State Cadastral Boundary Layer (R002)",
+      "acquisition_date": "2024-01-10",
+      "processing_method": "VECTOR_SURVEY_POLYGON",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "a28f13b4-71fd-4a0d-83b1-570fb2ecd9a2",
+      "object_id": "parcel-rural-002",
+      "object_type": "Parcel",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Aerial Orthomosaic 5cm (R002)",
+      "acquisition_date": "2024-02-05",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 96.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "7c0ac5cc-e59b-4b8d-b15b-799a7a1f55cc",
+      "object_id": "parcel-rural-002",
+      "object_type": "Parcel",
+      "source_type": "DEM",
+      "source_reference": "Survey of India Ground DEM 1m (Ashta Tehsil)",
+      "acquisition_date": "2023-11-15",
+      "processing_method": "RASTER_TERRAIN_SURFACE",
+      "quality_score": 93.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "5d0cd3f5-859d-4913-accf-0642ce6de078",
+      "object_id": "parcel-rural-003",
+      "object_type": "Parcel",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "DoLR State Cadastral Boundary Layer (R003)",
+      "acquisition_date": "2024-01-10",
+      "processing_method": "VECTOR_SURVEY_POLYGON",
+      "quality_score": 98.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "6f1344b1-80c2-4111-a0bf-aa8da5da412a",
+      "object_id": "parcel-rural-003",
+      "object_type": "Parcel",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "High-Res Aerial Orthomosaic 5cm (R003)",
+      "acquisition_date": "2024-02-05",
+      "processing_method": "PHOTOGRAMMETRY",
+      "quality_score": 96.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "c0317c46-c3ba-4b80-afe6-af19fa54d668",
+      "object_id": "parcel-rural-003",
+      "object_type": "Parcel",
+      "source_type": "DEM",
+      "source_reference": "Survey of India Ground DEM 1m (Ashta Tehsil)",
+      "acquisition_date": "2023-11-15",
+      "processing_method": "RASTER_TERRAIN_SURFACE",
+      "quality_score": 93.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "b85489da-cb9c-4636-b680-42f1e675427f",
+      "object_id": "infra-ug-001",
+      "object_type": "Infrastructure",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "Volumetric Right-of-Way Survey (UG-PARK-01)",
+      "acquisition_date": "2024-01-20",
+      "processing_method": "VOLUMETRIC_CADASTRE_ALIGNMENT",
+      "quality_score": 97.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "004fded4-7f3a-4fa7-9e96-147b1e02e40f",
+      "object_id": "infra-ug-001",
+      "object_type": "Infrastructure",
+      "source_type": "LIDAR",
+      "source_reference": "LiDAR 3D Profile (Navkar Underground Basement Parking)",
+      "acquisition_date": "2024-02-18",
+      "processing_method": "POINT_CLOUD_CROSS_SECTION",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "z_min_m": 495.0,
+        "z_max_m": 500.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "1bc81c9a-6b44-4d87-85cd-b828f62348e3",
+      "object_id": "infra-ev-001",
+      "object_type": "Infrastructure",
+      "source_type": "GIS_PARCEL",
+      "source_reference": "Volumetric Right-of-Way Survey (EV-METRO-01)",
+      "acquisition_date": "2024-01-20",
+      "processing_method": "VOLUMETRIC_CADASTRE_ALIGNMENT",
+      "quality_score": 97.0,
+      "status": "VERIFIED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "375210f6-f467-410c-9bce-1268f07e3149",
+      "object_id": "infra-ev-001",
+      "object_type": "Infrastructure",
+      "source_type": "LIDAR",
+      "source_reference": "LiDAR 3D Profile (Bhopal Metro Elevated Corridor Line 1)",
+      "acquisition_date": "2024-02-18",
+      "processing_method": "POINT_CLOUD_CROSS_SECTION",
+      "quality_score": 95.0,
+      "status": "VERIFIED",
+      "metadata": {
+        "z_min_m": 512.0,
+        "z_max_m": 518.0
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "14cb6a64-a2f2-48b4-88d6-80a3c7fe350e",
+      "object_id": "cand-rur-001",
+      "object_type": "StructureCandidate",
+      "source_type": "LIDAR",
+      "source_reference": "Rural LiDAR Point-Cloud Scan #cand-rur-001",
+      "acquisition_date": "2024-03-05",
+      "processing_method": "SURFACE_ANOMALY_DETECTION",
+      "quality_score": 92.0,
+      "status": "DETECTED",
+      "metadata": {
+        "estimated_height_m": 4.2,
+        "permanence": "LIKELY_PERMANENT"
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "6dcecce5-af58-4c76-a9b9-332cf2eb9ffc",
+      "object_id": "cand-rur-001",
+      "object_type": "StructureCandidate",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "Village Aerial Reconnaissance Orthophoto",
+      "acquisition_date": "2024-03-06",
+      "processing_method": "UAV_SURFACE_INSPECTION",
+      "quality_score": 90.0,
+      "status": "DETECTED",
+      "metadata": {},
+      "is_synthetic": true
+    },
+    {
+      "id": "e9036d8f-9465-45f0-843d-94c39a20bd63",
+      "object_id": "cand-rur-002",
+      "object_type": "StructureCandidate",
+      "source_type": "LIDAR",
+      "source_reference": "Rural LiDAR Point-Cloud Scan #cand-rur-002",
+      "acquisition_date": "2024-03-05",
+      "processing_method": "SURFACE_ANOMALY_DETECTION",
+      "quality_score": 92.0,
+      "status": "DETECTED",
+      "metadata": {
+        "estimated_height_m": 1.8,
+        "permanence": "LIKELY_TEMPORARY"
+      },
+      "is_synthetic": true
+    },
+    {
+      "id": "73b30fdd-0e63-493a-bdce-1b62a16b8593",
+      "object_id": "cand-rur-002",
+      "object_type": "StructureCandidate",
+      "source_type": "DRONE_IMAGERY",
+      "source_reference": "Village Aerial Reconnaissance Orthophoto",
+      "acquisition_date": "2024-03-06",
+      "processing_method": "UAV_SURFACE_INSPECTION",
+      "quality_score": 90.0,
+      "status": "DETECTED",
+      "metadata": {},
+      "is_synthetic": true
+    }
+  ],
+  "review_cases": [
+    {
+      "id": "case-302-overlap",
+      "property_id": "prop-b1-u302",
+      "case_number": "RC-2026-0042",
+      "status": "CORRECTION_REQUIRED",
+      "priority": "HIGH",
+      "assigned_officer": "Inspection Officer R. K. Sharma",
+      "created_at": "2026-09-01T10:00:00Z",
+      "updated_at": "2026-09-01T10:00:00Z",
+      "review_notes": "Automated topology check detected vertical 3D elevation overlap with Unit 301. Officer geometry adjustment required.",
+      "history": [
+        {
+          "timestamp": "2026-09-01T10:00:00Z",
+          "from_status": "PENDING_VERIFICATION",
+          "to_status": "CORRECTION_REQUIRED",
+          "officer": "SYSTEM_VALIDATOR",
+          "notes": "Rule 05 Vertical Overlap Failed"
+        }
+      ]
+    }
+  ],
+  "structure_candidates": [
+    {
+      "id": "cand-rur-001",
+      "parcel_id": "parcel-rural-002",
+      "detection_source": "SYNTHETIC_RURAL_LIDAR",
+      "location_2d": [
+        77.108,
+        23.1025
+      ],
+      "estimated_height_m": 4.2,
+      "permanence_classification": "LIKELY_PERMANENT",
+      "false_positive_reason": null,
+      "status": "PENDING_OFFICER_REVIEW"
+    },
+    {
+      "id": "cand-rur-002",
+      "parcel_id": "parcel-rural-003",
+      "detection_source": "SYNTHETIC_RURAL_LIDAR",
+      "location_2d": [
+        77.114,
+        23.102
+      ],
+      "estimated_height_m": 1.8,
+      "permanence_classification": "LIKELY_TEMPORARY",
+      "false_positive_reason": "Spatial signature matches temporary agricultural brick stack / construction materials.",
+      "status": "REJECTED_AUTOMATICALLY_NON_PERMANENT"
+    }
+  ]
+}

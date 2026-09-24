@@ -1,4 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  ReactNode,
+} from "react";
+
 import {
   Parcel,
   Building,
@@ -10,16 +19,21 @@ import {
   ConfidenceScore,
   ValidationSummary,
   ReviewCase,
-  AuditEvent
-} from '../types';
-import { api } from '../services/api';
+  AuditEvent,
+} from "../types";
+
+import { api } from "../services/api";
+
+/* ================================================================
+   TYPES
+================================================================ */
 
 export interface CameraState {
   radius: number;
   theta: number;
   phi: number;
   target: [number, number, number];
-  propertyId: string; // tracks which property this camera state was set for
+  propertyId: string;
 }
 
 export interface ActiveLayers {
@@ -31,20 +45,28 @@ export interface ActiveLayers {
 }
 
 interface GeoVistaContextType {
-  // Navigation
-  currentTab: 'public' | 'officer' | 'scenarios';
-  setCurrentTab: (tab: 'public' | 'officer' | 'scenarios') => void;
+  /* Navigation */
+  currentTab: "public" | "officer" | "scenarios";
+  setCurrentTab: (
+    tab: "public" | "officer" | "scenarios",
+  ) => void;
 
-  // Data
+  /* Data */
   parcels: Parcel[];
   selectedParcel: Parcel | undefined;
+
   buildings: Building[];
   selectedBuilding: Building | undefined;
+
   floors: Floor[];
+
   properties: PropertyUnit[];
   selectedProperty: PropertyUnit | undefined;
-  selectedFloorFilter: number | 'ALL';
-  setSelectedFloorFilter: (floor: number | 'ALL') => void;
+
+  selectedFloorFilter: number | "ALL";
+  setSelectedFloorFilter: (
+    floor: number | "ALL",
+  ) => void;
 
   underground: Infrastructure[];
   elevated: Infrastructure[];
@@ -61,580 +83,1453 @@ interface GeoVistaContextType {
   loading: boolean;
   error: string | null;
 
-  // 3D Viewer State
+  /* 3D Viewer */
   cameraState: CameraState | null;
   setCameraState: (cam: CameraState) => void;
+
   activeLayers: ActiveLayers;
   toggleLayer: (layer: keyof ActiveLayers) => void;
+
   viewerRevision: number;
 
-  // Actions
-  selectParcelById: (parcelId: string) => Promise<void>;
-  selectBuildingById: (buildingId: string) => Promise<void>;
-  selectPropertyById: (propertyId: string) => Promise<void>;
-  selectReviewCaseById: (caseId: string) => Promise<void>;
+  /* Selection */
+  selectParcelById: (
+    parcelId: string,
+  ) => Promise<void>;
 
+  selectBuildingById: (
+    buildingId: string,
+  ) => Promise<void>;
+
+  selectPropertyById: (
+    propertyId: string,
+  ) => Promise<void>;
+
+  selectReviewCaseById: (
+    caseId: string,
+  ) => Promise<void>;
+
+  /* Officer Actions */
   correctProperty: (
     caseId: string,
-    data: { z_min_m?: number; z_max_m?: number; footprint_2d?: number[][]; reason: string }
+    data: {
+      z_min_m?: number;
+      z_max_m?: number;
+      footprint_2d?: number[][];
+      reason: string;
+    },
   ) => Promise<void>;
-  approveReview: (caseId: string, reason: string) => Promise<void>;
-  rejectReview: (caseId: string, reason: string) => Promise<void>;
+
+  approveReview: (
+    caseId: string,
+    reason: string,
+  ) => Promise<void>;
+
+  rejectReview: (
+    caseId: string,
+    reason: string,
+  ) => Promise<void>;
+
   runValidationForCurrentProperty: () => Promise<void>;
 
+  /* Simulation */
   resetSimulation: () => Promise<string>;
+
   triggerSpatialError: () => Promise<void>;
+
   triggerMissingEvidence: () => Promise<void>;
+
   triggerMultiSourceConflict: () => Promise<void>;
-  searchCadastre: (query: string) => Promise<void>;
+
+  /* Search */
+  searchCadastre: (
+    query: string,
+  ) => Promise<void>;
 }
 
-const GeoVistaContext = createContext<GeoVistaContextType | undefined>(undefined);
+/* ================================================================
+   CONTEXT
+================================================================ */
 
-export const GeoVistaProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [currentTab, setCurrentTab] = useState<'public' | 'officer' | 'scenarios'>('public');
-
-  const [parcels, setParcels] = useState<Parcel[]>([]);
-  const [selectedParcel, setSelectedParcel] = useState<Parcel | undefined>();
-  const [buildings, setBuildings] = useState<Building[]>([]);
-  const [selectedBuilding, setSelectedBuilding] = useState<Building | undefined>();
-  const [floors, setFloors] = useState<Floor[]>([]);
-  const [properties, setProperties] = useState<PropertyUnit[]>([]);
-  const [selectedProperty, setSelectedProperty] = useState<PropertyUnit | undefined>();
-  const [selectedFloorFilter, setSelectedFloorFilter] = useState<number | 'ALL'>('ALL');
-
-  const [underground, setUnderground] = useState<Infrastructure[]>([]);
-  const [elevated, setElevated] = useState<Infrastructure[]>([]);
-  const [candidates, setCandidates] = useState<StructureCandidate[]>([]);
-
-  const [evidence, setEvidence] = useState<Evidence[]>([]);
-  const [confidence, setConfidence] = useState<ConfidenceScore | undefined>();
-  const [validation, setValidation] = useState<ValidationSummary | undefined>();
-
-  const [reviewCases, setReviewCases] = useState<ReviewCase[]>([]);
-  const [selectedCase, setSelectedCase] = useState<ReviewCase | undefined>();
-  const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
-
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const [cameraState, setCameraState] = useState<CameraState | null>(null);
-  const [viewerRevision, setViewerRevision] = useState<number>(0);
-  const [activeLayers, setActiveLayers] = useState<ActiveLayers>({
-    showUnderground: true,
-    showElevated: true,
-    showCandidates: true,
-    showBuildingEnvelope: true,
-    showParcelBoundary: true
-  });
-
-  const toggleLayer = (layer: keyof ActiveLayers) => {
-    setActiveLayers((prev) => ({ ...prev, [layer]: !prev[layer] }));
-  };
-
-  // Helper to load review cases & audit log
-  const refreshReviewsAndAudit = useCallback(async () => {
-    try {
-      const [cases, logs] = await Promise.all([api.getReviews(), api.getAuditLog()]);
-      setReviewCases(cases);
-      setAuditLog(logs);
-      return { cases, logs };
-    } catch (err) {
-      console.error('Failed to load reviews and audit logs', err);
-      return { cases: [], logs: [] };
-    }
-  }, []);
-
-  // Generic Property Selection
-  const selectPropertyById = useCallback(async (propertyId: string) => {
-    try {
-      setLoading(true);
-      const prop = await api.getProperty(propertyId);
-      setSelectedProperty(prop);
-
-      // Fetch evidence, confidence, and validation in parallel
-      const [evs, conf, val] = await Promise.all([
-        api.getPropertyEvidence(prop.id).catch(() => []),
-        api.getPropertyConfidence(prop.id).catch(() => undefined),
-        api.getPropertyValidation(prop.id).catch(() => undefined)
-      ]);
-      setEvidence(evs);
-      setConfidence(conf);
-      setValidation(val);
-
-      // Check if there is an active review case for this property
-      setReviewCases((currentCases) => {
-        const matchingCase = currentCases.find((c) => c.property_id === prop.id);
-        setSelectedCase(matchingCase);
-        return currentCases;
-      });
-    } catch (err: any) {
-      console.error(`Failed to select property ${propertyId}`, err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Generic Building Selection
-  const selectBuildingById = useCallback(
-    async (buildingId: string) => {
-      try {
-        setLoading(true);
-        const bld = await api.getBuilding(buildingId);
-        setSelectedBuilding(bld);
-
-        const [flrs, units] = await Promise.all([
-          api.getBuildingFloors(bld.id),
-          api.getBuildingProperties(bld.id)
-        ]);
-        setFloors(flrs);
-        setProperties(units);
-
-        if (units.length > 0) {
-          await selectPropertyById(units[0].id);
-        } else {
-          setSelectedProperty(undefined);
-          setEvidence([]);
-          setConfidence(undefined);
-          setValidation(undefined);
-        }
-      } catch (err: any) {
-        console.error(`Failed to select building ${buildingId}`, err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [selectPropertyById]
+const GeoVistaContext =
+  createContext<GeoVistaContextType | undefined>(
+    undefined,
   );
 
-  // Generic Parcel Selection Pipeline (Goal 4)
-  const selectParcelById = useCallback(
-    async (parcelId: string) => {
+/* ================================================================
+   PROVIDER
+================================================================ */
+
+export const GeoVistaProvider: React.FC<{
+  children: ReactNode;
+}> = ({ children }) => {
+  /* ==============================================================
+     NAVIGATION
+  ============================================================== */
+
+  const [currentTab, setCurrentTab] = useState<
+    "public" | "officer" | "scenarios"
+  >("public");
+
+  /* ==============================================================
+     CORE CADASTRAL DATA
+  ============================================================== */
+
+  const [parcels, setParcels] =
+    useState<Parcel[]>([]);
+
+  const [selectedParcel, setSelectedParcel] =
+    useState<Parcel | undefined>();
+
+  const [buildings, setBuildings] =
+    useState<Building[]>([]);
+
+  const [selectedBuilding, setSelectedBuilding] =
+    useState<Building | undefined>();
+
+  const [floors, setFloors] =
+    useState<Floor[]>([]);
+
+  const [properties, setProperties] =
+    useState<PropertyUnit[]>([]);
+
+  const [selectedProperty, setSelectedProperty] =
+    useState<PropertyUnit | undefined>();
+
+  const [selectedFloorFilter, setSelectedFloorFilter] =
+    useState<number | "ALL">("ALL");
+
+  /* ==============================================================
+     INFRASTRUCTURE / CANDIDATES
+  ============================================================== */
+
+  const [underground, setUnderground] =
+    useState<Infrastructure[]>([]);
+
+  const [elevated, setElevated] =
+    useState<Infrastructure[]>([]);
+
+  const [candidates, setCandidates] =
+    useState<StructureCandidate[]>([]);
+
+  /* ==============================================================
+     EVIDENCE / VALIDATION
+  ============================================================== */
+
+  const [evidence, setEvidence] =
+    useState<Evidence[]>([]);
+
+  const [confidence, setConfidence] =
+    useState<ConfidenceScore | undefined>();
+
+  const [validation, setValidation] =
+    useState<ValidationSummary | undefined>();
+
+  /* ==============================================================
+     REVIEWS / AUDIT
+  ============================================================== */
+
+  const [reviewCases, setReviewCases] =
+    useState<ReviewCase[]>([]);
+
+  /*
+   * IMPORTANT:
+   * Keep latest review cases in a ref.
+   *
+   * This prevents selectPropertyById from depending on
+   * reviewCases state and therefore prevents the callback
+   * from being recreated every time reviewCases changes.
+   */
+  const reviewCasesRef =
+    useRef<ReviewCase[]>([]);
+
+  const [selectedCase, setSelectedCase] =
+    useState<ReviewCase | undefined>();
+
+  const [auditLog, setAuditLog] =
+    useState<AuditEvent[]>([]);
+
+  /* Keep ref synchronized with state */
+  useEffect(() => {
+    reviewCasesRef.current = reviewCases;
+  }, [reviewCases]);
+
+  /* ==============================================================
+     UI STATE
+  ============================================================== */
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  /* ==============================================================
+     3D VIEWER STATE
+  ============================================================== */
+
+  const [cameraState, setCameraState] =
+    useState<CameraState | null>(null);
+
+  const [viewerRevision, setViewerRevision] =
+    useState(0);
+
+  const [activeLayers, setActiveLayers] =
+    useState<ActiveLayers>({
+      showUnderground: true,
+      showElevated: true,
+      showCandidates: true,
+      showBuildingEnvelope: true,
+      showParcelBoundary: true,
+    });
+
+
+  /* ==============================================================
+     LAYER TOGGLE
+  ============================================================== */
+
+  const toggleLayer = useCallback(
+    (layer: keyof ActiveLayers) => {
+      setActiveLayers((previous) => ({
+        ...previous,
+        [layer]: !previous[layer],
+      }));
+    },
+    [],
+  );
+
+  /* ==============================================================
+     CLEAR PROPERTY DETAILS
+  ============================================================== */
+
+  const clearPropertyDetails =
+    useCallback(() => {
+      setSelectedProperty(undefined);
+      setEvidence([]);
+      setConfidence(undefined);
+      setValidation(undefined);
+      setSelectedCase(undefined);
+    }, []);
+
+  /* ==============================================================
+     REFRESH REVIEWS + AUDIT
+  ============================================================== */
+
+  const refreshReviewsAndAudit =
+    useCallback(async () => {
       try {
-        setLoading(true);
-        setError(null);
+        const [cases, logs] =
+          await Promise.all([
+            api.getReviews(),
+            api.getAuditLog(),
+          ]);
 
-        const parcel = await api.getParcel(parcelId);
-        setSelectedParcel(parcel);
+        setReviewCases(cases);
+        setAuditLog(logs);
 
-        // Fetch buildings, infrastructures, candidates, and parcel-level evidence in parallel
-        const [blds, infras, cands, parcelEvs] = await Promise.all([
-          api.getParcelBuildings(parcel.id).catch(() => []),
-          api.getParcelInfrastructures(parcel.id).catch(() => []),
-          api.getParcelCandidates(parcel.id).catch(() => []),
-          api.getParcelEvidence(parcel.id).catch(() => [])
-        ]);
+        return {
+          cases,
+          logs,
+        };
+      } catch (err) {
+        console.error(
+          "Failed to load reviews and audit logs",
+          err,
+        );
 
-        setBuildings(blds);
-        setUnderground(infras.filter((i) => i.z_min_m < 500.0));
-        setElevated(infras.filter((i) => i.z_min_m >= 500.0));
-        setCandidates(cands);
+        return {
+          cases: [],
+          logs: [],
+        };
+      }
+    }, []);
 
-        if (blds.length > 0) {
-          // Parcel has buildings -> select first building
-          await selectBuildingById(blds[0].id);
-        } else {
-          // Parcel has NO buildings (e.g. P003 transport corridor, or R001/R002/R003 rural parcel)
+  /* ==============================================================
+     SELECT PROPERTY
+  ============================================================== */
+
+  const selectPropertyById =
+    useCallback(
+      async (propertyId: string) => {
+        try {
+          setLoading(true);
+          setError(null);
+
+          const property =
+            await api.getProperty(propertyId);
+
+          setSelectedProperty(property);
+
+          const [
+            propertyEvidence,
+            propertyConfidence,
+            propertyValidation,
+          ] = await Promise.all([
+            api
+              .getPropertyEvidence(property.id)
+              .catch(() => []),
+
+            api
+              .getPropertyConfidence(property.id)
+              .catch(() => undefined),
+
+            api
+              .getPropertyValidation(property.id)
+              .catch(() => undefined),
+          ]);
+
+          setEvidence(propertyEvidence);
+          setConfidence(propertyConfidence);
+          setValidation(propertyValidation);
+
+          /*
+           * IMPORTANT:
+           * Do NOT depend on reviewCases state here.
+           *
+           * reviewCasesRef always contains the latest data,
+           * while selectPropertyById remains stable.
+           */
+          const matchingCase =
+            reviewCasesRef.current.find(
+              (reviewCase) =>
+                reviewCase.property_id ===
+                property.id,
+            );
+
+          setSelectedCase(matchingCase);
+        } catch (err: any) {
+          console.error(
+            `Failed to select property ${propertyId}`,
+            err,
+          );
+
+          setError(
+            err?.message ||
+              "Failed to load property.",
+          );
+        } finally {
+          setLoading(false);
+        }
+      },
+      [],
+    );
+
+  /* ==============================================================
+     SELECT BUILDING
+  ============================================================== */
+
+  const selectBuildingById =
+    useCallback(
+      async (buildingId: string) => {
+        try {
+          setLoading(true);
+          setError(null);
+
+          const building =
+            await api.getBuilding(buildingId);
+
+          setSelectedBuilding(building);
+
+          const [
+            buildingFloors,
+            buildingProperties,
+          ] = await Promise.all([
+            api.getBuildingFloors(
+              building.id,
+            ),
+
+            api.getBuildingProperties(
+              building.id,
+            ),
+          ]);
+
+          setFloors(buildingFloors);
+          setProperties(buildingProperties);
+
+          setSelectedFloorFilter("ALL");
+
+          if (buildingProperties.length > 0) {
+            await selectPropertyById(
+              buildingProperties[0].id,
+            );
+          } else {
+            clearPropertyDetails();
+          }
+        } catch (err: any) {
+          console.error(
+            `Failed to select building ${buildingId}`,
+            err,
+          );
+
+          setError(
+            err?.message ||
+              "Failed to load building.",
+          );
+        } finally {
+          setLoading(false);
+        }
+      },
+      [
+        selectPropertyById,
+        clearPropertyDetails,
+      ],
+    );
+
+  /* ==============================================================
+     SELECT PARCEL
+  ============================================================== */
+
+  const selectParcelById =
+    useCallback(
+      async (parcelId: string) => {
+        try {
+          setLoading(true);
+          setError(null);
+
+          const parcel =
+            await api.getParcel(parcelId);
+
+          setSelectedParcel(parcel);
+
+          const [
+            parcelBuildings,
+            parcelInfrastructure,
+            parcelCandidates,
+            parcelEvidence,
+          ] = await Promise.all([
+            api
+              .getParcelBuildings(parcel.id)
+              .catch(() => []),
+
+            api
+              .getParcelInfrastructures(
+                parcel.id,
+              )
+              .catch(() => []),
+
+            api
+              .getParcelCandidates(
+                parcel.id,
+              )
+              .catch(() => []),
+
+            api
+              .getParcelEvidence(
+                parcel.id,
+              )
+              .catch(() => []),
+          ]);
+
+          setBuildings(parcelBuildings);
+
+          setUnderground(
+            parcelInfrastructure.filter(
+              (item) =>
+                Number(item.z_min_m) < 500,
+            ),
+          );
+
+          setElevated(
+            parcelInfrastructure.filter(
+              (item) =>
+                Number(item.z_min_m) >= 500,
+            ),
+          );
+
+          setCandidates(parcelCandidates);
+
+          /* --------------------------------------------------------
+             PARCEL HAS BUILDING
+          -------------------------------------------------------- */
+
+          if (parcelBuildings.length > 0) {
+            await selectBuildingById(
+              parcelBuildings[0].id,
+            );
+
+            return;
+          }
+
+          /* --------------------------------------------------------
+             PARCEL WITHOUT BUILDING
+          -------------------------------------------------------- */
+
           setSelectedBuilding(undefined);
           setFloors([]);
           setProperties([]);
+          setSelectedFloorFilter("ALL");
           setSelectedProperty(undefined);
-          setEvidence(parcelEvs);
+          setEvidence(parcelEvidence);
+          setSelectedCase(undefined);
 
-          // If parcel has candidates or infrastructure, create contextual confidence & validation summary
-          if (cands.length > 0) {
+          /* --------------------------------------------------------
+             RURAL / CANDIDATE CONFIDENCE
+          -------------------------------------------------------- */
+
+          if (parcelCandidates.length > 0) {
+            const candidate =
+              parcelCandidates[0];
+
             setConfidence({
-              object_id: cands[0].id,
+              object_id: candidate.id,
+
               overall_score: 91.5,
+
               evidence_completeness: 94.0,
+
               geometry_quality: 90.0,
+
               positional_quality: 92.0,
+
               cross_source_agreement: 90.0,
+
               validation_score: 95.0,
-              label: 'Prototype Rural Technical Confidence',
-              disclaimer: 'Spatial sensor detection indicates candidate structure. Official land survey required.',
-              calculation_timestamp: new Date().toISOString()
+
+              label:
+                "Prototype Rural Technical Confidence",
+
+              disclaimer:
+                "Spatial sensor detection indicates candidate structure. Official land survey required.",
+
+              calculation_timestamp:
+                new Date().toISOString(),
             });
+
             setValidation({
               property_id: parcel.id,
-              overall_status: 'WARNING',
+
+              overall_status: "WARNING",
+
               total_rules_checked: 9,
+
               passed_rules: 8,
+
               warning_rules: 1,
+
               failed_rules: 0,
+
               results: [
                 {
-                  id: 'rur-val-01',
-                  target_object_id: parcel.id,
-                  rule_id: 'RULE_RURAL_01',
-                  rule_name: 'Rural Structure Candidate Inspection',
-                  category: 'RURAL_SENSOR',
-                  status: 'WARNING',
-                  severity: 'MEDIUM',
-                  message: `Detected structure candidate (${cands[0].permanence_classification}, H: ${cands[0].estimated_height_m}m). Ground survey verification recommended.`,
-                  timestamp: new Date().toISOString()
-                }
-              ]
+                  id: "rur-val-01",
+
+                  target_object_id:
+                    parcel.id,
+
+                  rule_id: "RULE_RURAL_01",
+
+                  rule_name:
+                    "Rural Structure Candidate Inspection",
+
+                  category: "RURAL_SENSOR",
+
+                  status: "WARNING",
+
+                  severity: "MEDIUM",
+
+                  message:
+                    `Detected structure candidate (${candidate.permanence_classification}, H: ${candidate.estimated_height_m}m). Ground survey verification recommended.`,
+
+                  timestamp:
+                    new Date().toISOString(),
+                },
+              ],
             });
           } else {
             setConfidence(undefined);
             setValidation(undefined);
           }
+        } catch (err: any) {
+          console.error(
+            `Failed to select parcel ${parcelId}`,
+            err,
+          );
+
+          setError(
+            err?.message ||
+              "Failed to load parcel.",
+          );
+        } finally {
+          setLoading(false);
         }
+      },
+      [selectBuildingById],
+    );
+
+  /* ==============================================================
+     INITIAL APPLICATION LOAD
+  ============================================================== */
+
+  useEffect(() => {
+    /*
+     * StrictMode-safe bootstrap:
+     *
+     * Do NOT use a "started" ref here. In React development mode,
+     * StrictMode mounts -> runs the effect -> immediately cleans it up
+     * -> mounts again. A started-ref would cause the second (real)
+     * effect to return while the first request is cancelled by its
+     * mounted flag, leaving the context empty forever.
+     */
+    let mounted = true;
+
+    const initializeApplication =
+      async () => {
+        try {
+          setLoading(true);
+          setError(null);
+
+          const allParcels =
+            await api.getParcels();
+
+          void refreshReviewsAndAudit();
+
+          if (!mounted) return;
+
+          setParcels(allParcels);
+
+          if (allParcels.length === 0) {
+            clearPropertyDetails();
+            setSelectedParcel(undefined);
+            return;
+          }
+
+          const initialParcel =
+            allParcels.find(
+              (parcel) =>
+                parcel.parcel_code === "P001",
+            ) || allParcels[0];
+
+          await selectParcelById(
+            initialParcel.id,
+          );
+        } catch (err: any) {
+          console.error(
+            "Initial GeoVista load failed",
+            err,
+          );
+
+          if (mounted) {
+            setError(
+              err?.message ||
+                "Failed to initialize GeoVista.",
+            );
+          }
+        } finally {
+          if (mounted) {
+            setLoading(false);
+          }
+        }
+      };
+
+    void initializeApplication();
+
+    return () => {
+      mounted = false;
+    };
+  }, [
+    selectParcelById,
+    refreshReviewsAndAudit,
+    clearPropertyDetails,
+  ]);
+
+  /* ==============================================================
+     SELECT REVIEW CASE
+  ============================================================== */
+
+  const selectReviewCaseById =
+    useCallback(
+      async (caseId: string) => {
+        try {
+          setLoading(true);
+          setError(null);
+
+          const reviewCase =
+            await api.getReview(caseId);
+
+          setSelectedCase(reviewCase);
+
+          const property =
+            await api.getProperty(
+              reviewCase.property_id,
+            );
+
+          const parcel =
+            parcels.find(
+              (item) =>
+                item.id ===
+                property.parcel_id,
+            );
+
+          if (
+            parcel &&
+            selectedParcel?.id !== parcel.id
+          ) {
+            setSelectedParcel(parcel);
+
+            const parcelBuildings =
+              await api.getParcelBuildings(
+                parcel.id,
+              );
+
+            setBuildings(
+              parcelBuildings,
+            );
+          }
+
+          const building =
+            buildings.find(
+              (item) =>
+                item.id ===
+                property.building_id,
+            );
+
+          if (
+            building &&
+            selectedBuilding?.id !==
+              building.id
+          ) {
+            setSelectedBuilding(
+              building,
+            );
+
+            const [
+              buildingFloors,
+              buildingProperties,
+            ] = await Promise.all([
+              api.getBuildingFloors(
+                building.id,
+              ),
+
+              api.getBuildingProperties(
+                building.id,
+              ),
+            ]);
+
+            setFloors(
+              buildingFloors,
+            );
+
+            setProperties(
+              buildingProperties,
+            );
+          }
+
+          await selectPropertyById(
+            property.id,
+          );
+        } catch (err: any) {
+          console.error(
+            `Failed to select review case ${caseId}`,
+            err,
+          );
+
+          setError(
+            err?.message ||
+              "Failed to load review case.",
+          );
+        } finally {
+          setLoading(false);
+        }
+      },
+      [
+        parcels,
+        buildings,
+        selectedParcel,
+        selectedBuilding,
+        selectPropertyById,
+      ],
+    );
+
+  /* ==============================================================
+     OFFICER: CORRECT PROPERTY
+  ============================================================== */
+
+  const correctProperty =
+    useCallback(
+      async (
+        caseId: string,
+        data: {
+          z_min_m?: number;
+          z_max_m?: number;
+          footprint_2d?: number[][];
+          reason: string;
+        },
+      ) => {
+        try {
+          setLoading(true);
+          setError(null);
+
+          const updatedUnit =
+            await api.correctProperty(
+              caseId,
+              data,
+            );
+
+          setProperties((previous) =>
+            previous.map((unit) =>
+              unit.id === updatedUnit.id
+                ? updatedUnit
+                : unit,
+            ),
+          );
+
+          setSelectedProperty(
+            updatedUnit,
+          );
+
+          const [
+            updatedValidation,
+            updatedConfidence,
+            updatedCase,
+          ] = await Promise.all([
+            api.getPropertyValidation(
+              updatedUnit.id,
+            ),
+
+            api.getPropertyConfidence(
+              updatedUnit.id,
+            ),
+
+            api.getReview(caseId),
+          ]);
+
+          setValidation(
+            updatedValidation,
+          );
+
+          setConfidence(
+            updatedConfidence,
+          );
+
+          setSelectedCase(
+            updatedCase,
+          );
+
+          await refreshReviewsAndAudit();
+
+          setViewerRevision(
+            (revision) =>
+              revision + 1,
+          );
+        } catch (err: any) {
+          console.error(
+            "Failed to correct property geometry",
+            err,
+          );
+
+          setError(
+            err?.message ||
+              "Failed to correct property.",
+          );
+
+          throw err;
+        } finally {
+          setLoading(false);
+        }
+      },
+      [refreshReviewsAndAudit],
+    );
+
+  /* ==============================================================
+     OFFICER: APPROVE
+  ============================================================== */
+
+  const approveReview =
+    useCallback(
+      async (
+        caseId: string,
+        reason: string,
+      ) => {
+        try {
+          setLoading(true);
+          setError(null);
+
+          const updatedCase =
+            await api.approveReview(
+              caseId,
+              reason,
+            );
+
+          setSelectedCase(
+            updatedCase,
+          );
+
+          if (selectedProperty) {
+            const updatedProperty =
+              await api.getProperty(
+                selectedProperty.id,
+              );
+
+            setSelectedProperty(
+              updatedProperty,
+            );
+
+            setProperties(
+              (previous) =>
+                previous.map((unit) =>
+                  unit.id ===
+                  updatedProperty.id
+                    ? updatedProperty
+                    : unit,
+                ),
+            );
+          }
+
+          await refreshReviewsAndAudit();
+
+          setViewerRevision(
+            (revision) =>
+              revision + 1,
+          );
+        } catch (err: any) {
+          console.error(
+            "Failed to approve review",
+            err,
+          );
+
+          setError(
+            err?.message ||
+              "Failed to approve review.",
+          );
+
+          throw err;
+        } finally {
+          setLoading(false);
+        }
+      },
+      [
+        selectedProperty,
+        refreshReviewsAndAudit,
+      ],
+    );
+
+  /* ==============================================================
+     OFFICER: REJECT
+  ============================================================== */
+
+  const rejectReview =
+    useCallback(
+      async (
+        caseId: string,
+        reason: string,
+      ) => {
+        try {
+          setLoading(true);
+          setError(null);
+
+          const updatedCase =
+            await api.rejectReview(
+              caseId,
+              reason,
+            );
+
+          setSelectedCase(
+            updatedCase,
+          );
+
+          if (selectedProperty) {
+            const updatedProperty =
+              await api.getProperty(
+                selectedProperty.id,
+              );
+
+            setSelectedProperty(
+              updatedProperty,
+            );
+
+            setProperties(
+              (previous) =>
+                previous.map((unit) =>
+                  unit.id ===
+                  updatedProperty.id
+                    ? updatedProperty
+                    : unit,
+                ),
+            );
+          }
+
+          await refreshReviewsAndAudit();
+
+          setViewerRevision(
+            (revision) =>
+              revision + 1,
+          );
+        } catch (err: any) {
+          console.error(
+            "Failed to reject review",
+            err,
+          );
+
+          setError(
+            err?.message ||
+              "Failed to reject review.",
+          );
+
+          throw err;
+        } finally {
+          setLoading(false);
+        }
+      },
+      [
+        selectedProperty,
+        refreshReviewsAndAudit,
+      ],
+    );
+
+  /* ==============================================================
+     VALIDATE CURRENT PROPERTY
+  ============================================================== */
+
+  const runValidationForCurrentProperty =
+    useCallback(async () => {
+      if (!selectedProperty) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const updatedValidation =
+          await api.validateProperty(
+            selectedProperty.id,
+          );
+
+        setValidation(
+          updatedValidation,
+        );
+
+        const updatedConfidence =
+          await api.getPropertyConfidence(
+            selectedProperty.id,
+          );
+
+        setConfidence(
+          updatedConfidence,
+        );
       } catch (err: any) {
-        console.error(`Failed to select parcel ${parcelId}`, err);
-        setError(err.message);
+        console.error(
+          "Validation execution error",
+          err,
+        );
+
+        setError(
+          err?.message ||
+            "Validation failed.",
+        );
       } finally {
         setLoading(false);
       }
-    },
-    [selectBuildingById]
-  );
+    }, [selectedProperty]);
 
-  // Initial Load on mount
-  useEffect(() => {
-    let isMounted = true;
-    const initApp = async () => {
+  /* ==============================================================
+     SIMULATION: RESET
+  ============================================================== */
+
+  const resetSimulation =
+    useCallback(async () => {
       try {
         setLoading(true);
-        const [allParcels] = await Promise.all([api.getParcels(), refreshReviewsAndAudit()]);
+        setError(null);
 
-        if (!isMounted) return;
+        const result =
+          await api.resetSimulation();
+
+        setCameraState(null);
+
+        const [
+          allParcels,
+        ] = await Promise.all([
+          api.getParcels(),
+          refreshReviewsAndAudit(),
+        ]);
+
         setParcels(allParcels);
 
         if (allParcels.length > 0) {
-          // Default load P001 cleanly
-          const initialParcel = allParcels.find((p) => p.parcel_code === 'P001') || allParcels[0];
-          await selectParcelById(initialParcel.id);
-        }
-      } catch (err: any) {
-        console.error('Initial load error', err);
-        if (isMounted) setError(err.message);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
+          const initialParcel =
+            allParcels.find(
+              (parcel) =>
+                parcel.parcel_code === "P001",
+            ) || allParcels[0];
 
-    initApp();
-    return () => {
-      isMounted = false;
-    };
-  }, [selectParcelById, refreshReviewsAndAudit]);
-
-  // Generic Review Case Selection
-  const selectReviewCaseById = useCallback(
-    async (caseId: string) => {
-      try {
-        setLoading(true);
-        const c = await api.getReview(caseId);
-        setSelectedCase(c);
-
-        // Resolve the property associated with this case
-        const prop = await api.getProperty(c.property_id);
-        // Find parcel
-        const p = parcels.find((item) => item.id === prop.parcel_id);
-        if (p && selectedParcel?.id !== p.id) {
-          setSelectedParcel(p);
-          const blds = await api.getParcelBuildings(p.id);
-          setBuildings(blds);
-        }
-        const b = buildings.find((item) => item.id === prop.building_id);
-        if (b && selectedBuilding?.id !== b.id) {
-          setSelectedBuilding(b);
-          const [flrs, units] = await Promise.all([
-            api.getBuildingFloors(b.id),
-            api.getBuildingProperties(b.id)
-          ]);
-          setFloors(flrs);
-          setProperties(units);
+          await selectParcelById(
+            initialParcel.id,
+          );
         }
 
-        await selectPropertyById(prop.id);
+        setViewerRevision(
+          (revision) =>
+            revision + 1,
+        );
+
+        return result.message;
       } catch (err: any) {
-        console.error(`Failed to select review case ${caseId}`, err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [parcels, selectedParcel, buildings, selectedBuilding, selectPropertyById]
-  );
+        console.error(
+          "Failed to reset simulation",
+          err,
+        );
 
-  // Officer Mutation: Geometry Correction (Goal 3)
-  const correctProperty = useCallback(
-    async (
-      caseId: string,
-      data: { z_min_m?: number; z_max_m?: number; footprint_2d?: number[][]; reason: string }
-    ) => {
-      try {
-        setLoading(true);
-        const updatedUnit = await api.correctProperty(caseId, data);
+        setError(
+          err?.message ||
+            "Failed to reset simulation.",
+        );
 
-        // 1. Update authoritative property in list and selected
-        setProperties((prev) => prev.map((u) => (u.id === updatedUnit.id ? updatedUnit : u)));
-        setSelectedProperty(updatedUnit);
-
-        // 2. Re-fetch validation, confidence, and review case
-        const [val, conf, c] = await Promise.all([
-          api.getPropertyValidation(updatedUnit.id),
-          api.getPropertyConfidence(updatedUnit.id),
-          api.getReview(caseId)
-        ]);
-
-        setValidation(val);
-        setConfidence(conf);
-        setSelectedCase(c);
-
-        // 3. Refresh review cases list & audit log
-        await refreshReviewsAndAudit();
-
-        // 4. Invalidate 3D viewer cache so mesh regenerates immediately
-        setViewerRevision((rev) => rev + 1);
-      } catch (err: any) {
-        console.error('Failed to correct property geometry', err);
         throw err;
       } finally {
         setLoading(false);
       }
-    },
-    [refreshReviewsAndAudit]
-  );
+    }, [
+      refreshReviewsAndAudit,
+      selectParcelById,
+    ]);
 
-  // Officer Mutation: Approve
-  const approveReview = useCallback(
-    async (caseId: string, reason: string) => {
+  /* ==============================================================
+     SIMULATION: SPATIAL ERROR
+  ============================================================== */
+
+  const triggerSpatialError =
+    useCallback(async () => {
       try {
         setLoading(true);
-        const updatedCase = await api.approveReview(caseId, reason);
-        setSelectedCase(updatedCase);
+        setError(null);
+
+        await api.triggerSpatialError();
+
+        await selectPropertyById(
+          "prop-b1-u302",
+        );
+
+        await refreshReviewsAndAudit();
+
+        setViewerRevision(
+          (revision) =>
+            revision + 1,
+        );
+      } catch (err: any) {
+        console.error(
+          "Failed to trigger spatial error",
+          err,
+        );
+
+        setError(
+          err?.message ||
+            "Failed to trigger spatial error.",
+        );
+
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    }, [
+      selectPropertyById,
+      refreshReviewsAndAudit,
+    ]);
+
+  /* ==============================================================
+     SIMULATION: MISSING EVIDENCE
+  ============================================================== */
+
+  const triggerMissingEvidence =
+    useCallback(async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        await api.triggerMissingEvidence();
+
+        await selectPropertyById(
+          "prop-b1-u401",
+        );
+
+        setViewerRevision(
+          (revision) =>
+            revision + 1,
+        );
+      } catch (err: any) {
+        console.error(
+          "Failed to trigger missing evidence",
+          err,
+        );
+
+        setError(
+          err?.message ||
+            "Failed to trigger missing evidence.",
+        );
+
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    }, [selectPropertyById]);
+
+  /* ==============================================================
+     SIMULATION: MULTI SOURCE CONFLICT
+  ============================================================== */
+
+  const triggerMultiSourceConflict =
+    useCallback(async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        await api.triggerMultiSourceConflict();
 
         if (selectedProperty) {
-          const updatedProp = await api.getProperty(selectedProperty.id);
-          setSelectedProperty(updatedProp);
-          setProperties((prev) => prev.map((u) => (u.id === updatedProp.id ? updatedProp : u)));
+          await selectPropertyById(
+            selectedProperty.id,
+          );
         }
 
-        await refreshReviewsAndAudit();
-        setViewerRevision((rev) => rev + 1);
+        setViewerRevision(
+          (revision) =>
+            revision + 1,
+        );
       } catch (err: any) {
-        console.error('Failed to approve review', err);
+        console.error(
+          "Failed to trigger multi-source conflict",
+          err,
+        );
+
+        setError(
+          err?.message ||
+            "Failed to trigger conflict.",
+        );
+
         throw err;
       } finally {
         setLoading(false);
       }
-    },
-    [selectedProperty, refreshReviewsAndAudit]
-  );
+    }, [
+      selectedProperty,
+      selectPropertyById,
+    ]);
 
-  // Officer Mutation: Reject
-  const rejectReview = useCallback(
-    async (caseId: string, reason: string) => {
-      try {
-        setLoading(true);
-        const updatedCase = await api.rejectReview(caseId, reason);
-        setSelectedCase(updatedCase);
+  /* ==============================================================
+     SEARCH CADASTRE
+  ============================================================== */
 
-        if (selectedProperty) {
-          const updatedProp = await api.getProperty(selectedProperty.id);
-          setSelectedProperty(updatedProp);
-          setProperties((prev) => prev.map((u) => (u.id === updatedProp.id ? updatedProp : u)));
-        }
+  const searchCadastre =
+    useCallback(
+      async (query: string) => {
+        const normalizedQuery =
+          query.trim();
 
-        await refreshReviewsAndAudit();
-        setViewerRevision((rev) => rev + 1);
-      } catch (err: any) {
-        console.error('Failed to reject review', err);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [selectedProperty, refreshReviewsAndAudit]
-  );
+        if (!normalizedQuery) return;
 
-  // Run validation on demand
-  const runValidationForCurrentProperty = useCallback(async () => {
-    if (!selectedProperty) return;
-    try {
-      setLoading(true);
-      const val = await api.validateProperty(selectedProperty.id);
-      setValidation(val);
-      const conf = await api.getPropertyConfidence(selectedProperty.id);
-      setConfidence(conf);
-    } catch (err: any) {
-      console.error('Validation execution error', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedProperty]);
+        try {
+          setLoading(true);
+          setError(null);
 
-  // Simulation: Reset All
-  const resetSimulation = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.resetSimulation();
-      setCameraState(null);
+          const result =
+            await api.search(
+              normalizedQuery,
+            );
 
-      // Re-initialize entire application state
-      const [allParcels] = await Promise.all([api.getParcels(), refreshReviewsAndAudit()]);
-      setParcels(allParcels);
+          if (
+            !result.results ||
+            result.results.length === 0
+          ) {
+            setError(
+              `No cadastral result found for "${normalizedQuery}".`,
+            );
 
-      if (allParcels.length > 0) {
-        const p1 = allParcels.find((p) => p.parcel_code === 'P001') || allParcels[0];
-        await selectParcelById(p1.id);
-      }
-
-      setViewerRevision((rev) => rev + 1);
-      return res.message;
-    } catch (err: any) {
-      console.error('Failed to reset simulation', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [refreshReviewsAndAudit, selectParcelById]);
-
-  // Simulation: Spatial Error (Scenario 4)
-  const triggerSpatialError = useCallback(async () => {
-    try {
-      setLoading(true);
-      await api.triggerSpatialError();
-      // Unit 302 now has vertical overlap with Unit 301
-      // Re-fetch unit 302
-      await selectPropertyById('prop-b1-u302');
-      await refreshReviewsAndAudit();
-      setViewerRevision((rev) => rev + 1);
-    } catch (err: any) {
-      console.error('Failed to trigger spatial error', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [selectPropertyById, refreshReviewsAndAudit]);
-
-  // Simulation: Missing Evidence (Scenario 8)
-  const triggerMissingEvidence = useCallback(async () => {
-    try {
-      setLoading(true);
-      await api.triggerMissingEvidence();
-      // Re-fetch unit 401
-      await selectPropertyById('prop-b1-u401');
-      setViewerRevision((rev) => rev + 1);
-    } catch (err: any) {
-      console.error('Failed to trigger missing evidence', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [selectPropertyById]);
-
-  // Simulation: Multi-source conflict (Scenario 3)
-  const triggerMultiSourceConflict = useCallback(async () => {
-    try {
-      setLoading(true);
-      await api.triggerMultiSourceConflict();
-      if (selectedProperty) {
-        await selectPropertyById(selectedProperty.id);
-      }
-      setViewerRevision((rev) => rev + 1);
-    } catch (err: any) {
-      console.error('Failed to trigger conflict', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedProperty, selectPropertyById]);
-
-  // Search Cadastre
-  const searchCadastre = useCallback(
-    async (query: string) => {
-      if (!query.trim()) return;
-      try {
-        setLoading(true);
-        const res = await api.search(query.trim());
-        if (res.results.length > 0) {
-          const first = res.results[0];
-          if (first.type === 'PARCEL') {
-            await selectParcelById(first.id);
-          } else if (first.type === 'PROPERTY_UNIT') {
-            const prop = await api.getProperty(first.id);
-            const p = parcels.find((item) => item.id === prop.parcel_id);
-            if (p) await selectParcelById(p.id);
-            await selectPropertyById(prop.id);
-          } else if (first.type === 'BUILDING') {
-            const b = await api.getBuilding(first.id);
-            const p = parcels.find((item) => item.id === b.parcel_id);
-            if (p) await selectParcelById(p.id);
-            await selectBuildingById(b.id);
+            return;
           }
+
+          const firstResult =
+            result.results[0];
+
+          /* --------------------------------------------------------
+             PARCEL
+          -------------------------------------------------------- */
+
+          if (
+            firstResult.type ===
+            "PARCEL"
+          ) {
+            await selectParcelById(
+              firstResult.id,
+            );
+
+            return;
+          }
+
+          /* --------------------------------------------------------
+             PROPERTY UNIT
+          -------------------------------------------------------- */
+
+          if (
+            firstResult.type ===
+            "PROPERTY_UNIT"
+          ) {
+            const property =
+              await api.getProperty(
+                firstResult.id,
+              );
+
+            const parcel =
+              parcels.find(
+                (item) =>
+                  item.id ===
+                  property.parcel_id,
+              );
+
+            if (parcel) {
+              await selectParcelById(
+                parcel.id,
+              );
+            }
+
+            await selectPropertyById(
+              property.id,
+            );
+
+            return;
+          }
+
+          /* --------------------------------------------------------
+             BUILDING
+          -------------------------------------------------------- */
+
+          if (
+            firstResult.type ===
+            "BUILDING"
+          ) {
+            const building =
+              await api.getBuilding(
+                firstResult.id,
+              );
+
+            const parcel =
+              parcels.find(
+                (item) =>
+                  item.id ===
+                  building.parcel_id,
+              );
+
+            if (parcel) {
+              await selectParcelById(
+                parcel.id,
+              );
+            }
+
+            await selectBuildingById(
+              building.id,
+            );
+          }
+        } catch (err: any) {
+          console.error(
+            "Cadastre search failed",
+            err,
+          );
+
+          setError(
+            err?.message ||
+              "Cadastre search failed.",
+          );
+        } finally {
+          setLoading(false);
         }
-      } catch (err: any) {
-        console.error('Search error', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [parcels, selectParcelById, selectPropertyById, selectBuildingById]
-  );
+      },
+      [
+        parcels,
+        selectParcelById,
+        selectPropertyById,
+        selectBuildingById,
+      ],
+    );
+
+  /* ==============================================================
+     CONTEXT VALUE
+  ============================================================== */
+
+  const contextValue: GeoVistaContextType = {
+    /* Navigation */
+    currentTab,
+    setCurrentTab,
+
+    /* Data */
+    parcels,
+    selectedParcel,
+
+    buildings,
+    selectedBuilding,
+
+    floors,
+
+    properties,
+    selectedProperty,
+
+    selectedFloorFilter,
+    setSelectedFloorFilter,
+
+    underground,
+    elevated,
+    candidates,
+
+    evidence,
+    confidence,
+    validation,
+
+    reviewCases,
+    selectedCase,
+    auditLog,
+
+    loading,
+    error,
+
+    /* Viewer */
+    cameraState,
+    setCameraState,
+
+    activeLayers,
+    toggleLayer,
+
+    viewerRevision,
+
+    /* Selection */
+    selectParcelById,
+    selectBuildingById,
+    selectPropertyById,
+    selectReviewCaseById,
+
+    /* Officer */
+    correctProperty,
+    approveReview,
+    rejectReview,
+    runValidationForCurrentProperty,
+
+    /* Simulation */
+    resetSimulation,
+    triggerSpatialError,
+    triggerMissingEvidence,
+    triggerMultiSourceConflict,
+
+    /* Search */
+    searchCadastre,
+  };
 
   return (
     <GeoVistaContext.Provider
-      value={{
-        currentTab,
-        setCurrentTab,
-        parcels,
-        selectedParcel,
-        buildings,
-        selectedBuilding,
-        floors,
-        properties,
-        selectedProperty,
-        selectedFloorFilter,
-        setSelectedFloorFilter,
-        underground,
-        elevated,
-        candidates,
-        evidence,
-        confidence,
-        validation,
-        reviewCases,
-        selectedCase,
-        auditLog,
-        loading,
-        error,
-        cameraState,
-        setCameraState,
-        activeLayers,
-        toggleLayer,
-        viewerRevision,
-        selectParcelById,
-        selectBuildingById,
-        selectPropertyById,
-        selectReviewCaseById,
-        correctProperty,
-        approveReview,
-        rejectReview,
-        runValidationForCurrentProperty,
-        resetSimulation,
-        triggerSpatialError,
-        triggerMissingEvidence,
-        triggerMultiSourceConflict,
-        searchCadastre
-      }}
+      value={contextValue}
     >
       {children}
     </GeoVistaContext.Provider>
   );
 };
 
-export const useGeoVista = (): GeoVistaContextType => {
-  const context = useContext(GeoVistaContext);
-  if (!context) {
-    throw new Error('useGeoVista must be used within a GeoVistaProvider');
-  }
-  return context;
-};
+/* ================================================================
+   HOOK
+================================================================ */
+
+export const useGeoVista =
+  (): GeoVistaContextType => {
+    const context =
+      useContext(GeoVistaContext);
+
+    if (!context) {
+      throw new Error(
+        "useGeoVista must be used within a GeoVistaProvider",
+      );
+    }
+
+    return context;
+  };

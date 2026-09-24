@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import { useGeoVista } from '../context/GeoVistaContext';
-import { Map2D } from '../components/Map2D';
-import { Viewer3D } from '../components/Viewer3D';
-import { EvidenceList } from '../components/EvidenceList';
-import { ConfidenceMeter } from '../components/ConfidenceMeter';
-import { ValidationBadge } from '../components/ValidationBadge';
-import { IssueReportModal } from '../components/IssueReportModal';
-import { GuidedAssistant } from '../components/GuidedAssistant';
-import { Search, MapPin, Building2, Flag, AlertCircle, Info, Trees, Layers } from 'lucide-react';
+import React, { useState } from "react";
+import { useGeoVista } from "../context/GeoVistaContext";
+import { Map2D } from "../components/Map2D";
+import { Viewer3D } from "../components/Viewer3D";
+import { EvidenceList } from "../components/EvidenceList";
+import { ConfidenceMeter } from "../components/ConfidenceMeter";
+import { ValidationBadge } from "../components/ValidationBadge";
+import { IssueReportModal } from "../components/IssueReportModal";
+import { GuidedAssistant } from "../components/GuidedAssistant";
+
+import {
+  Search,
+  MapPin,
+  Building2,
+  Flag,
+  AlertCircle,
+  Info,
+  Trees,
+  Layers,
+  ShieldCheck,
+  Database,
+  Activity,
+  ChevronRight,
+} from "lucide-react";
 
 export const PublicPortal: React.FC = () => {
   const {
@@ -23,241 +37,585 @@ export const PublicPortal: React.FC = () => {
     elevated,
     selectParcelById,
     searchCadastre,
-    loading
+    loading,
   } = useGeoVista();
 
-  const [searchQuery, setSearchQuery] = useState('P001');
+  const [searchQuery, setSearchQuery] = useState("P001");
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    await searchCadastre(searchQuery.trim());
+  const handleSearch = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const query = searchQuery.trim();
+
+    if (!query) return;
+
+    await searchCadastre(query);
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      {/* Notice Banner */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-3.5 flex items-start space-x-3 text-xs text-blue-900 shadow-2xs">
-        <Info className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
-        <p className="leading-relaxed">
-          <strong>Public Property Discovery Portal:</strong> Displays proposed 3D volumetric cadastre identifiers, multi-sensor spatial evidence, and technical confidence for citizen transparency. This system generates prototype spatial candidates and does not certify legal land titles.
-        </p>
-      </div>
+    <div className="min-h-screen bg-[#f6f9fc]">
 
-      {/* Search Bar & Locality Filter */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3" />
-            <input
-              type="text"
-              placeholder="Search by Parcel (P001, P002, P003, R001, R002), 3D ID, Locality, or Building..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 focus:bg-white transition"
-            />
+      {/* =========================================================
+          PORTAL HEADER
+      ========================================================= */}
+      <section className="border-b border-slate-200 bg-white">
+        <div className="mx-auto max-w-[1450px] px-5 py-5 lg:px-8">
+
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-600">
+                <Database className="h-4 w-4" />
+                Public Property Discovery
+              </div>
+
+              <h1 className="mt-1 text-2xl font-black text-[#071d35]">
+                3D Cadastral Property Portal
+              </h1>
+
+              <p className="mt-1 max-w-2xl text-sm text-slate-500">
+                Search parcels, explore 3D property volumes and review
+                available spatial evidence.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+
+              <div className="hidden rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 sm:block">
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <Activity className="h-4 w-4 text-emerald-600" />
+                  Spatial Data System
+                </div>
+
+                <div className="mt-1 text-sm font-bold text-slate-800">
+                  Operational
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+                <div className="flex items-center gap-2 text-xs text-emerald-700">
+                  <ShieldCheck className="h-4 w-4" />
+                  Public Access
+                </div>
+
+                <div className="mt-1 text-sm font-bold text-emerald-800">
+                  Read Only
+                </div>
+              </div>
+            </div>
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-6 py-2.5 bg-blue-900 text-white rounded-xl text-sm font-semibold hover:bg-blue-800 transition shadow-xs flex items-center justify-center space-x-2 disabled:opacity-50"
+        </div>
+      </section>
+
+      {/* =========================================================
+          MAIN CONTENT
+      ========================================================= */}
+      <main className="mx-auto max-w-[1450px] space-y-5 px-5 py-5 lg:px-8">
+
+        {/* =======================================================
+            INFORMATION BANNER
+        ======================================================= */}
+        <div className="flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-xs text-blue-900">
+
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-700" />
+
+          <p className="leading-relaxed">
+            <strong>Public Property Discovery Portal:</strong>{" "}
+            Displays proposed 3D volumetric cadastre identifiers,
+            multi-sensor spatial evidence and technical confidence
+            for citizen transparency. This system generates prototype
+            spatial candidates and does not certify legal land titles.
+          </p>
+        </div>
+
+        {/* =======================================================
+            SEARCH
+        ======================================================= */}
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+
+          <div className="mb-3 flex items-center gap-2">
+            <Search className="h-5 w-5 text-blue-600" />
+
+            <div>
+              <h2 className="text-sm font-bold text-[#071d35]">
+                Search Cadastral Records
+              </h2>
+
+              <p className="text-xs text-slate-500">
+                Search using parcel code, 3D identifier, locality or building.
+              </p>
+            </div>
+          </div>
+
+          <form
+            onSubmit={handleSearch}
+            className="flex flex-col gap-3 sm:flex-row"
           >
-            <span>{loading ? 'Searching...' : 'Search Cadastre'}</span>
-          </button>
-        </form>
+            <div className="relative flex-1">
 
-        {/* Generic Sample Parcels Pills (Goal 4) */}
-        <div className="flex items-center space-x-2 mt-3 text-xs overflow-x-auto pb-1">
-          <span className="text-slate-400 font-medium shrink-0">Sample Parcels:</span>
-          {parcels.map((p) => (
+              <Search className="absolute left-3.5 top-3 h-5 w-5 text-slate-400" />
+
+              <input
+                type="text"
+                placeholder="Search P001, P002, 3D ID, locality or building..."
+                value={searchQuery}
+                onChange={(event) =>
+                  setSearchQuery(event.target.value)
+                }
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+
             <button
-              key={p.id}
-              onClick={() => selectParcelById(p.id)}
-              className={`px-3 py-1 rounded-lg border font-medium transition shrink-0 ${
-                selectedParcel?.id === p.id
-                  ? 'bg-blue-900 text-white border-blue-900'
-                  : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-              }`}
+              type="submit"
+              disabled={loading}
+              className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-7 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {p.parcel_code} ({p.locality} - {p.area_type})
-            </button>
-          ))}
-        </div>
-      </div>
+              <Search className="h-4 w-4" />
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: 3D Volumetric Viewer & 2D Cadastre */}
-        <div className="lg:col-span-8 space-y-6">
-          {/* 3D Viewer (uses single source of truth from GeoVistaContext) */}
-          <Viewer3D />
+              {loading ? "Searching..." : "Search Cadastre"}
 
-          {/* 2D Cadastral Footprint Map */}
-          <Map2D
-            parcel={selectedParcel}
-            building={selectedBuilding}
-            selectedUnit={selectedProperty}
-          />
-        </div>
-
-        {/* Right Column: Property Inspection & Evidence Panel */}
-        <div className="lg:col-span-4 space-y-6">
-          {selectedProperty ? (
-            <>
-              {/* Review Latency Banner */}
-              {selectedProperty.verification_status === 'UNDER_REVIEW' && (
-                <div className="p-3 bg-amber-50 border border-amber-300 rounded-xl text-amber-900 text-xs flex items-start space-x-2">
-                  <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-                  <p className="leading-snug">
-                    <strong>Under Official Review:</strong> This property is currently under official review. Some spatial values may be updated after survey verification.
-                  </p>
-                </div>
+              {!loading && (
+                <ChevronRight className="h-4 w-4" />
               )}
+            </button>
+          </form>
 
-              {/* Property Details Card */}
-              <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
-                <div className="flex items-start justify-between">
+          {/* SAMPLE PARCELS */}
+          <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1">
+
+            <span className="shrink-0 text-xs font-semibold text-slate-400">
+              Sample Parcels:
+            </span>
+
+            {parcels.map((parcel) => (
+              <button
+                key={parcel.id}
+                type="button"
+                onClick={() => selectParcelById(parcel.id)}
+                className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
+                  selectedParcel?.id === parcel.id
+                    ? "border-blue-600 bg-blue-600 text-white"
+                    : "border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                }`}
+              >
+                {parcel.parcel_code}
+                {" · "}
+                {parcel.locality}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* =======================================================
+            MAIN GRID
+        ======================================================= */}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+
+          {/* =====================================================
+              LEFT: MAP / 3D VIEW
+          ===================================================== */}
+          <div className="space-y-5 lg:col-span-8">
+
+            {/* 3D VIEWER HEADER */}
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+              <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+
+                <div className="flex items-center gap-3">
+
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
+                    <Layers className="h-5 w-5 text-blue-600" />
+                  </div>
+
                   <div>
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-900 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
-                      Proposed 3D Spatial Identifier
-                    </span>
-                    <h2 className="text-base font-bold font-mono text-slate-900 mt-1">
-                      {selectedProperty.proposed_3d_id}
+                    <h2 className="text-sm font-bold text-[#071d35]">
+                      3D Volumetric Cadastre
                     </h2>
-                  </div>
-                  <ValidationBadge status={selectedProperty.verification_status} size="sm" />
-                </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs py-2 border-y border-slate-100">
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Floor Level</span>
-                    <span className="font-semibold text-slate-800">
-                      Floor {selectedProperty.floor_number}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Unit Number</span>
-                    <span className="font-semibold text-slate-800">
-                      {selectedProperty.unit_number} ({selectedProperty.unit_type})
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Vertical Elevation Range</span>
-                    <span className="font-semibold text-slate-800 font-mono">
-                      Z: {selectedProperty.z_min_m}m – {selectedProperty.z_max_m}m
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Footprint Area</span>
-                    <span className="font-semibold text-slate-800">
-                      {selectedProperty.area_sqm.toFixed(1)} m²
-                    </span>
+                    <p className="text-xs text-slate-500">
+                      Interactive property and vertical spatial view
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs text-slate-500">
-                    Revision Version: <strong>v{selectedProperty.revision_number}</strong>
-                  </span>
-                  <button
-                    onClick={() => setIsReportModalOpen(true)}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition"
-                  >
-                    <Flag className="w-3.5 h-3.5" />
-                    <span>Report Issue</span>
-                  </button>
-                </div>
+                <span className="hidden rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-[10px] font-bold text-emerald-700 sm:block">
+                  3D VIEW
+                </span>
               </div>
 
-              {/* Confidence Meter */}
-              <ConfidenceMeter confidence={confidence} />
+              <Viewer3D />
+            </div>
 
-              {/* Attached Evidence List */}
-              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-                <EvidenceList evidences={evidence} />
-              </div>
-            </>
-          ) : selectedParcel ? (
-            /* Parcel-Level Inspector when parcel has no units (Rural / Transport Corridor) */
-            <div className="space-y-6">
-              <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
-                <div className="flex items-start justify-between">
+            {/* 2D MAP */}
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+              <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+
+                <div className="flex items-center gap-3">
+
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50">
+                    <MapPin className="h-5 w-5 text-emerald-600" />
+                  </div>
+
                   <div>
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
-                      {selectedParcel.area_type} Cadastral Parcel
-                    </span>
-                    <h2 className="text-base font-bold font-mono text-slate-900 mt-1">
-                      {selectedParcel.parcel_code} ({selectedParcel.locality})
+                    <h2 className="text-sm font-bold text-[#071d35]">
+                      2D Cadastral Footprint
                     </h2>
+
+                    <p className="text-xs text-slate-500">
+                      Parcel and building footprint reference
+                    </p>
                   </div>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                    {selectedParcel.land_use}
-                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs py-2 border-y border-slate-100">
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">District / State</span>
-                    <span className="font-semibold text-slate-800">
-                      {selectedParcel.district}, {selectedParcel.state}
-                    </span>
+                <span className="hidden rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-bold text-blue-700 sm:block">
+                  2D CADASTRE
+                </span>
+              </div>
+
+              <Map2D
+                parcel={selectedParcel}
+                building={selectedBuilding}
+                selectedUnit={selectedProperty}
+              />
+            </div>
+          </div>
+
+          {/* =====================================================
+              RIGHT: INSPECTOR
+          ===================================================== */}
+          <div className="space-y-5 lg:col-span-4">
+
+            {/* ===================================================
+                PROPERTY SELECTED
+            =================================================== */}
+            {selectedProperty ? (
+              <>
+                {/* REVIEW ALERT */}
+                {selectedProperty.verification_status ===
+                  "UNDER_REVIEW" && (
+                  <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+
+                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+
+                    <p className="leading-relaxed">
+                      <strong>Under Official Review:</strong>{" "}
+                      This property is currently under official review.
+                      Some spatial values may be updated after survey
+                      verification.
+                    </p>
                   </div>
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Total Surface Area</span>
-                    <span className="font-semibold text-slate-800">
-                      {selectedParcel.area_sqm.toLocaleString(undefined, { maximumFractionDigits: 1 })} m²
-                    </span>
+                )}
+
+                {/* PROPERTY CARD */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
+                  <div className="flex items-start justify-between gap-3">
+
+                    <div className="min-w-0">
+
+                      <span className="inline-flex items-center gap-1 rounded-md border border-blue-100 bg-blue-50 px-2 py-1 text-[9px] font-extrabold uppercase tracking-wider text-blue-900">
+                        <ShieldCheck className="h-3 w-3" />
+                        Proposed 3D Spatial Identifier
+                      </span>
+
+                      <h2 className="mt-2 break-all font-mono text-sm font-bold text-slate-900">
+                        {selectedProperty.proposed_3d_id}
+                      </h2>
+                    </div>
+
+                    <ValidationBadge
+                      status={selectedProperty.verification_status}
+                      size="sm"
+                    />
                   </div>
-                  {candidates.length > 0 && (
-                    <div className="col-span-2">
-                      <span className="text-slate-400 block text-[10px]">Detected Structure Candidates</span>
-                      <span className="font-bold text-amber-700">
-                        {candidates.length} Candidate ({candidates[0].permanence_classification}, H: {candidates[0].estimated_height_m}m)
+
+                  {/* DETAILS */}
+                  <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4 border-y border-slate-100 py-4">
+
+                    <div>
+                      <span className="block text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                        Floor Level
+                      </span>
+
+                      <span className="mt-1 block text-sm font-bold text-slate-800">
+                        Floor {selectedProperty.floor_number}
                       </span>
                     </div>
-                  )}
-                  {elevated.length > 0 && (
-                    <div className="col-span-2">
-                      <span className="text-slate-400 block text-[10px]">Elevated Transit Infrastructure</span>
-                      <span className="font-bold text-sky-700">
-                        {elevated[0].name} (Z: {elevated[0].z_min_m}m – {elevated[0].z_max_m}m)
+
+                    <div>
+                      <span className="block text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                        Unit Number
+                      </span>
+
+                      <span className="mt-1 block text-sm font-bold text-slate-800">
+                        {selectedProperty.unit_number}
+                      </span>
+
+                      <span className="text-[10px] text-slate-500">
+                        {selectedProperty.unit_type}
                       </span>
                     </div>
-                  )}
+
+                    <div>
+                      <span className="block text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                        Vertical Elevation
+                      </span>
+
+                      <span className="mt-1 block font-mono text-sm font-bold text-slate-800">
+                        {selectedProperty.z_min_m}m –{" "}
+                        {selectedProperty.z_max_m}m
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="block text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                        Footprint Area
+                      </span>
+
+                      <span className="mt-1 block text-sm font-bold text-slate-800">
+                        {selectedProperty.area_sqm.toFixed(1)} m²
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* FOOTER */}
+                  <div className="flex items-center justify-between gap-3 pt-4">
+
+                    <span className="text-xs text-slate-500">
+                      Revision Version:{" "}
+                      <strong className="text-slate-800">
+                        v{selectedProperty.revision_number}
+                      </strong>
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setIsReportModalOpen(true)
+                      }
+                      className="flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
+                    >
+                      <Flag className="h-3.5 w-3.5" />
+                      Report Issue
+                    </button>
+                  </div>
                 </div>
 
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  {selectedParcel.area_type === 'RURAL'
-                    ? 'Agricultural parcel mapped under the SVAMITVA / Digital India Land Records Modernization Programme. 3D candidate assists support rural structure verification.'
-                    : 'Urban right-of-way volumetric parcel supporting multi-layer elevated and subsurface transportation infrastructure.'}
+                {/* CONFIDENCE */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <ConfidenceMeter confidence={confidence} />
+                </div>
+
+                {/* EVIDENCE */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <EvidenceList evidences={evidence} />
+                </div>
+              </>
+            ) : selectedParcel ? (
+              /* =================================================
+                 PARCEL INSPECTOR
+              ================================================= */
+              <div className="space-y-5">
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
+                  <div className="flex items-start justify-between gap-3">
+
+                    <div>
+                      <span className="inline-flex items-center gap-1 rounded-md border border-emerald-100 bg-emerald-50 px-2 py-1 text-[9px] font-extrabold uppercase tracking-wider text-emerald-900">
+                        {selectedParcel.area_type} Cadastral Parcel
+                      </span>
+
+                      <h2 className="mt-2 font-mono text-sm font-bold text-slate-900">
+                        {selectedParcel.parcel_code}
+                      </h2>
+
+                      <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {selectedParcel.locality}
+                      </p>
+                    </div>
+
+                    <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-blue-700">
+                      {selectedParcel.land_use}
+                    </span>
+                  </div>
+
+                  {/* PARCEL DETAILS */}
+                  <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4 border-y border-slate-100 py-4">
+
+                    <div>
+                      <span className="block text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                        District / State
+                      </span>
+
+                      <span className="mt-1 block text-sm font-semibold text-slate-800">
+                        {selectedParcel.district},{" "}
+                        {selectedParcel.state}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="block text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                        Surface Area
+                      </span>
+
+                      <span className="mt-1 block text-sm font-semibold text-slate-800">
+                        {selectedParcel.area_sqm.toLocaleString(
+                          undefined,
+                          {
+                            maximumFractionDigits: 1,
+                          },
+                        )}{" "}
+                        m²
+                      </span>
+                    </div>
+
+                    {/* STRUCTURE CANDIDATE */}
+                    {candidates.length > 0 && (
+                      <div className="col-span-2 rounded-xl border border-amber-100 bg-amber-50 p-3">
+
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-amber-700" />
+
+                          <span className="text-[10px] font-bold uppercase tracking-wide text-amber-700">
+                            Detected Structure Candidate
+                          </span>
+                        </div>
+
+                        <p className="mt-1 text-sm font-bold text-amber-900">
+                          {candidates.length} Candidate
+                        </p>
+
+                        <p className="mt-1 text-xs text-amber-800">
+                          {candidates[0].permanence_classification}
+                          {" · "}
+                          Estimated Height:{" "}
+                          {candidates[0].estimated_height_m}m
+                        </p>
+                      </div>
+                    )}
+
+                    {/* ELEVATED */}
+                    {elevated.length > 0 && (
+                      <div className="col-span-2 rounded-xl border border-sky-100 bg-sky-50 p-3">
+
+                        <div className="flex items-center gap-2">
+                          <Layers className="h-4 w-4 text-sky-700" />
+
+                          <span className="text-[10px] font-bold uppercase tracking-wide text-sky-700">
+                            Elevated Transit Infrastructure
+                          </span>
+                        </div>
+
+                        <p className="mt-1 text-sm font-bold text-sky-900">
+                          {elevated[0].name}
+                        </p>
+
+                        <p className="mt-1 font-mono text-xs text-sky-800">
+                          Z: {elevated[0].z_min_m}m –{" "}
+                          {elevated[0].z_max_m}m
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* CONTEXT */}
+                  <div className="mt-4 flex items-start gap-2">
+
+                    {selectedParcel.area_type === "RURAL" ? (
+                      <Trees className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                    ) : (
+                      <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
+                    )}
+
+                    <p className="text-xs leading-relaxed text-slate-500">
+                      {selectedParcel.area_type === "RURAL"
+                        ? "Agricultural parcel mapped under the SVAMITVA / Digital India Land Records Modernization Programme. 3D candidate assists support rural structure verification."
+                        : "Urban right-of-way volumetric parcel supporting multi-layer elevated and subsurface transportation infrastructure."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* CONFIDENCE */}
+                {confidence && (
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <ConfidenceMeter confidence={confidence} />
+                  </div>
+                )}
+
+                {/* EVIDENCE */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <EvidenceList evidences={evidence} />
+                </div>
+
+                {/* UNDERGROUND */}
+                {underground.length > 0 && (
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+
+                    <div className="flex items-center gap-2">
+                      <Layers className="h-4 w-4 text-slate-600" />
+
+                      <h3 className="text-sm font-bold text-[#071d35]">
+                        Underground Infrastructure
+                      </h3>
+                    </div>
+
+                    <div className="mt-3 space-y-2">
+                      {underground.map((item) => (
+                        <div
+                          key={item.id}
+                          className="rounded-lg bg-slate-50 p-3"
+                        >
+                          <p className="text-xs font-bold text-slate-800">
+                            {item.name}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* =================================================
+                 EMPTY STATE
+              ================================================= */
+              <div className="flex min-h-[360px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-6 text-center shadow-sm">
+
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50">
+                  <MapPin className="h-8 w-8 text-blue-500" />
+                </div>
+
+                <h3 className="mt-4 text-base font-bold text-[#071d35]">
+                  Select a Property
+                </h3>
+
+                <p className="mt-2 max-w-xs text-xs leading-relaxed text-slate-500">
+                  Search for a parcel or select one of the sample
+                  cadastral records above to inspect its spatial
+                  information.
                 </p>
               </div>
-
-              {/* Confidence Meter if available */}
-              {confidence && <ConfidenceMeter confidence={confidence} />}
-
-              {/* Attached Evidence List */}
-              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-                <EvidenceList evidences={evidence} />
-              </div>
-            </div>
-          ) : (
-            <div className="p-8 bg-white rounded-xl border border-dashed border-slate-300 text-center text-slate-400 text-xs">
-              Select a parcel or property unit from the cadastre to inspect details.
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Guided Assistant */}
-      <GuidedAssistant
-        selectedProperty={selectedProperty}
-        validation={validation}
-        confidence={confidence}
-      />
+        {/* =======================================================
+            GUIDED ASSISTANT
+        ======================================================= */}
+        <GuidedAssistant
+          selectedProperty={selectedProperty}
+          validation={validation}
+          confidence={confidence}
+        />
+      </main>
 
-      {/* Citizen Report Modal */}
+      {/* =========================================================
+          ISSUE REPORT
+      ========================================================= */}
       {selectedProperty && (
         <IssueReportModal
           isOpen={isReportModalOpen}

@@ -35,6 +35,10 @@ htmlcov/
 .env.*
 !.env.example
 .env.local
+.env
+backend/.env
+backend/src/data/users.json
+backend/src/data/user.json
 
 # ---------- IDE / Editors ----------
 .vscode/

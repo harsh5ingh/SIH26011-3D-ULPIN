@@ -2291,7 +2291,11 @@ const Viewer3D: React.FC = () => {
     /*
      * Hero plinth
      */
-    if (selectedBuilding && floors.length > 0) {
+    if (Boolean(
+  selectedBuilding ||
+  floors.length > 0 ||
+  properties.length > 0
+) && floors.length > 0) {
       const plinth = new THREE.Mesh(
         new THREE.BoxGeometry(
           heroWidth + 2.2,
@@ -2722,7 +2726,11 @@ const Viewer3D: React.FC = () => {
     /*
      * Roof terrace + utility room.
      */
-    if (selectedBuilding && floors.length > 0) {
+    if (Boolean(
+  selectedBuilding ||
+  floors.length > 0 ||
+  properties.length > 0
+) && floors.length > 0) {
       const roofZ =
         Math.max(
           ...floors.map(
@@ -5032,8 +5040,11 @@ const Viewer3D: React.FC = () => {
             EMPTY STATE
         ==================================================== */}
 
-        {!selectedBuilding &&
-          properties.length === 0 && (
+        {!Boolean(
+  selectedBuilding ||
+  floors.length > 0 ||
+  properties.length > 0
+) && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
 
               <div className="rounded-xl border border-slate-700 bg-slate-950/80 px-5 py-4 text-center backdrop-blur">

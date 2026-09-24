@@ -12,154 +12,780 @@ import {
   Infrastructure,
   StructureCandidate,
   SearchResponse,
-  AuditEvent
-} from '../types';
+  AuditEvent,
+} from "../types";
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+/* ==========================================================================
+   CONFIGURATION
+========================================================================== */
 
-async function handleResponse<T>(res: Response): Promise<T> {
-  if (!res.ok) {
-    const errorText = await res.text();
-    let detail = errorText;
-    try {
-      const json = JSON.parse(errorText);
-      detail = json.detail || errorText;
-    } catch (_) {}
-    throw new Error(detail || `HTTP error ${res.status}`);
-  }
-  return res.json();
+const API_BASE = (
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:8000"
+).replace(/\/$/, "");
+
+const TOKEN_KEY = "geovista_token";
+const USER_KEY = "geovista_user";
+
+/* ==========================================================================
+   AUTH TYPES
+========================================================================== */
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: "public" | "officer";
+  created_at?: string;
 }
 
+export interface AuthResponse {
+  access_token: string;
+  token_type: string;
+  user: AuthUser;
+}
+
+export interface AuthMeResponse {
+  user: AuthUser;
+}
+
+export interface SignupData {
+  name: string;
+  email: string;
+  password: string;
+  role: "public" | "officer";
+  officer_code?: string;
+}
+
+export interface SigninData {
+  email: string;
+  password: string;
+  role: "public" | "officer";
+}
+
+/* ==========================================================================
+   AUTH STORAGE
+========================================================================== */
+
+const getToken = (): string | null => {
+  return localStorage.getItem(TOKEN_KEY);
+};
+
+const getStoredUser = (): AuthUser | null => {
+  const raw = localStorage.getItem(USER_KEY);
+
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(raw) as AuthUser;
+  } catch {
+    localStorage.removeItem(USER_KEY);
+    return null;
+  }
+};
+
+const setAuth = (data: AuthResponse): void => {
+  localStorage.setItem(
+    TOKEN_KEY,
+    data.access_token,
+  );
+
+  localStorage.setItem(
+    USER_KEY,
+    JSON.stringify(data.user),
+  );
+};
+
+const clearAuth = (): void => {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+};
+
+/* ==========================================================================
+   REQUEST TYPES
+========================================================================== */
+
+interface RequestOptions extends RequestInit {
+  auth?: boolean;
+}
+
+/* ==========================================================================
+   RESPONSE HANDLER
+========================================================================== */
+
+async function handleResponse<T>(
+  response: Response,
+): Promise<T> {
+  const contentType =
+    response.headers.get("content-type") || "";
+
+  let payload: unknown = null;
+
+  try {
+    if (
+      contentType.includes(
+        "application/json",
+      )
+    ) {
+      payload = await response.json();
+    } else {
+      payload = await response.text();
+    }
+  } catch {
+    payload = null;
+  }
+
+  if (!response.ok) {
+    let message =
+      `HTTP ${response.status}`;
+
+    if (
+      typeof payload === "string" &&
+      payload.trim()
+    ) {
+      message = payload;
+    }
+
+    if (
+      payload &&
+      typeof payload === "object"
+    ) {
+      const data =
+        payload as Record<
+          string,
+          unknown
+        >;
+
+      if (
+        typeof data.detail ===
+        "string"
+      ) {
+        message = data.detail;
+      } else if (
+        typeof data.message ===
+        "string"
+      ) {
+        message = data.message;
+      } else if (
+        typeof data.error ===
+        "string"
+      ) {
+        message = data.error;
+      }
+    }
+
+    throw new Error(message);
+  }
+
+  return payload as T;
+}
+
+/* ==========================================================================
+   REQUEST HELPER
+========================================================================== */
+
+async function request<T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<T> {
+  const {
+    auth = true,
+    headers,
+    ...fetchOptions
+  } = options;
+
+  const requestHeaders =
+    new Headers(headers);
+
+  /*
+   * Automatically send JSON content type
+   * whenever a request contains a body.
+   */
+  if (
+    fetchOptions.body &&
+    !requestHeaders.has(
+      "Content-Type",
+    )
+  ) {
+    requestHeaders.set(
+      "Content-Type",
+      "application/json",
+    );
+  }
+
+  /*
+   * Attach JWT when authentication
+   * is enabled.
+   */
+  if (auth) {
+    const token = getToken();
+
+    if (token) {
+      requestHeaders.set(
+        "Authorization",
+        `Bearer ${token}`,
+      );
+    }
+  }
+
+  let response: Response;
+
+  try {
+    response = await fetch(
+      `${API_BASE}${path}`,
+      {
+        ...fetchOptions,
+        headers: requestHeaders,
+      },
+    );
+  } catch (error) {
+    console.error(
+      "GeoVISTA API request failed:",
+      error,
+    );
+
+    throw new Error(
+      "Unable to connect to GeoVISTA backend. Make sure the backend server is running.",
+    );
+  }
+
+  /*
+   * If token expired/invalid, clear local
+   * authentication state.
+   *
+   * Do not redirect here. The React app
+   * should decide where to navigate.
+   */
+  if (
+    response.status === 401 &&
+    auth
+  ) {
+    clearAuth();
+  }
+
+  return handleResponse<T>(
+    response,
+  );
+}
+
+/* ==========================================================================
+   API
+========================================================================== */
+
 export const api = {
-  // Health
-  getHealth: () => fetch(`${API_BASE}/health`).then(handleResponse<{ status: string; project: string }>),
+  /* ========================================================================
+     HEALTH
+  ======================================================================== */
 
-  // Search
-  search: (query: string): Promise<SearchResponse> =>
-    fetch(`${API_BASE}/api/search?q=${encodeURIComponent(query)}`).then(handleResponse<SearchResponse>),
+  getHealth: (): Promise<{
+    status: string;
+    project?: string;
+  }> =>
+    request("/health", {
+      auth: false,
+    }),
 
-  // Parcels
-  getParcels: (areaType?: 'URBAN' | 'RURAL'): Promise<Parcel[]> => {
-    const url = areaType ? `${API_BASE}/api/parcels?area_type=${areaType}` : `${API_BASE}/api/parcels`;
-    return fetch(url).then(handleResponse<Parcel[]>);
+  /* ========================================================================
+     AUTHENTICATION
+  ======================================================================== */
+
+  signup: async (
+    data: SignupData,
+  ): Promise<AuthResponse> => {
+    const response =
+      await request<AuthResponse>(
+        "/api/auth/signup",
+        {
+          method: "POST",
+          auth: false,
+          body: JSON.stringify(data),
+        },
+      );
+
+    setAuth(response);
+
+    return response;
   },
-  getParcel: (id: string): Promise<Parcel> =>
-    fetch(`${API_BASE}/api/parcels/${id}`).then(handleResponse<Parcel>),
-  getParcelBuildings: (parcelId: string): Promise<Building[]> =>
-    fetch(`${API_BASE}/api/parcels/${parcelId}/buildings`).then(handleResponse<Building[]>),
-  getParcelInfrastructures: (parcelId: string): Promise<Infrastructure[]> =>
-    fetch(`${API_BASE}/api/parcels/${parcelId}/infrastructures`).then(handleResponse<Infrastructure[]>),
-  getParcelCandidates: (parcelId: string): Promise<StructureCandidate[]> =>
-    fetch(`${API_BASE}/api/parcels/${parcelId}/candidates`).then(handleResponse<StructureCandidate[]>),
-  getParcelEvidence: (parcelId: string): Promise<Evidence[]> =>
-    fetch(`${API_BASE}/api/parcels/${parcelId}/evidence`).then(handleResponse<Evidence[]>),
 
-  // Buildings
-  getBuildings: (): Promise<Building[]> =>
-    fetch(`${API_BASE}/api/buildings`).then(handleResponse<Building[]>),
-  getBuilding: (id: string): Promise<Building> =>
-    fetch(`${API_BASE}/api/buildings/${id}`).then(handleResponse<Building>),
-  getBuildingFloors: (id: string): Promise<Floor[]> =>
-    fetch(`${API_BASE}/api/buildings/${id}/floors`).then(handleResponse<Floor[]>),
-  getBuildingProperties: (id: string): Promise<PropertyUnit[]> =>
-    fetch(`${API_BASE}/api/buildings/${id}/properties`).then(handleResponse<PropertyUnit[]>),
+  signin: async (
+    data: SigninData,
+  ): Promise<AuthResponse> => {
+    const response =
+      await request<AuthResponse>(
+        "/api/auth/signin",
+        {
+          method: "POST",
+          auth: false,
+          body: JSON.stringify(data),
+        },
+      );
 
-  // Properties
-  getProperties: (): Promise<PropertyUnit[]> =>
-    fetch(`${API_BASE}/api/properties`).then(handleResponse<PropertyUnit[]>),
-  getProperty: (id: string): Promise<PropertyUnit> =>
-    fetch(`${API_BASE}/api/properties/${id}`).then(handleResponse<PropertyUnit>),
-  getPropertyGeometry: (id: string): Promise<PropertyGeometry> =>
-    fetch(`${API_BASE}/api/properties/${id}/geometry`).then(handleResponse<PropertyGeometry>),
-  getPropertyEvidence: (id: string): Promise<Evidence[]> =>
-    fetch(`${API_BASE}/api/properties/${id}/evidence`).then(handleResponse<Evidence[]>),
-  getPropertyConfidence: (id: string): Promise<ConfidenceScore> =>
-    fetch(`${API_BASE}/api/properties/${id}/confidence`).then(handleResponse<ConfidenceScore>),
-  getPropertyValidation: (id: string): Promise<ValidationSummary> =>
-    fetch(`${API_BASE}/api/properties/${id}/validation`).then(handleResponse<ValidationSummary>),
-  validateProperty: (id: string): Promise<ValidationSummary> =>
-    fetch(`${API_BASE}/api/properties/${id}/validate`, { method: 'POST' }).then(handleResponse<ValidationSummary>),
+    setAuth(response);
 
-  // Infrastructures
-  getUnderground: (): Promise<Infrastructure[]> =>
-    fetch(`${API_BASE}/api/infrastructures/underground`).then(handleResponse<Infrastructure[]>),
-  getElevated: (): Promise<Infrastructure[]> =>
-    fetch(`${API_BASE}/api/infrastructures/elevated`).then(handleResponse<Infrastructure[]>),
+    return response;
+  },
 
-  // Reviews
-  getReviews: (): Promise<ReviewCase[]> =>
-    fetch(`${API_BASE}/api/reviews`).then(handleResponse<ReviewCase[]>),
-  getReview: (id: string): Promise<ReviewCase> =>
-    fetch(`${API_BASE}/api/reviews/${id}`).then(handleResponse<ReviewCase>),
-  approveReview: (id: string, reason: string): Promise<ReviewCase> =>
-    fetch(`${API_BASE}/api/reviews/${id}/approve`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reason })
-    }).then(handleResponse<ReviewCase>),
-  rejectReview: (id: string, reason: string): Promise<ReviewCase> =>
-    fetch(`${API_BASE}/api/reviews/${id}/reject`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reason })
-    }).then(handleResponse<ReviewCase>),
+  me: async (): Promise<AuthMeResponse> => {
+    const response =
+      await request<AuthMeResponse>(
+        "/api/auth/me",
+      );
+
+    if (response.user) {
+      localStorage.setItem(
+        USER_KEY,
+        JSON.stringify(
+          response.user,
+        ),
+      );
+    }
+
+    return response;
+  },
+
+  logout: (): void => {
+    clearAuth();
+  },
+
+  getToken,
+
+  getCurrentUser:
+    (): AuthUser | null => {
+      return getStoredUser();
+    },
+
+  isAuthenticated:
+    (): boolean => {
+      return Boolean(getToken());
+    },
+
+  /* ========================================================================
+     SEARCH
+  ======================================================================== */
+
+  search: (
+    query: string,
+  ): Promise<SearchResponse> =>
+    request<SearchResponse>(
+      `/api/search?q=${encodeURIComponent(
+        query,
+      )}`,
+    ),
+
+  /* ========================================================================
+     PARCELS
+  ======================================================================== */
+
+  getParcels: (
+    areaType?: "URBAN" | "RURAL",
+  ): Promise<Parcel[]> => {
+    const query = areaType
+      ? `?area_type=${encodeURIComponent(
+          areaType,
+        )}`
+      : "";
+
+    return request<Parcel[]>(
+      `/api/parcels${query}`,
+    );
+  },
+
+  getParcel: (
+    id: string,
+  ): Promise<Parcel> =>
+    request<Parcel>(
+      `/api/parcels/${encodeURIComponent(
+        id,
+      )}`,
+    ),
+
+  getParcelBuildings: (
+    parcelId: string,
+  ): Promise<Building[]> =>
+    request<Building[]>(
+      `/api/parcels/${encodeURIComponent(
+        parcelId,
+      )}/buildings`,
+    ),
+
+  getParcelInfrastructures: (
+    parcelId: string,
+  ): Promise<Infrastructure[]> =>
+    request<Infrastructure[]>(
+      `/api/parcels/${encodeURIComponent(
+        parcelId,
+      )}/infrastructures`,
+    ),
+
+  getParcelCandidates: (
+    parcelId: string,
+  ): Promise<StructureCandidate[]> =>
+    request<StructureCandidate[]>(
+      `/api/parcels/${encodeURIComponent(
+        parcelId,
+      )}/candidates`,
+    ),
+
+  getParcelEvidence: (
+    parcelId: string,
+  ): Promise<Evidence[]> =>
+    request<Evidence[]>(
+      `/api/parcels/${encodeURIComponent(
+        parcelId,
+      )}/evidence`,
+    ),
+
+  /* ========================================================================
+     BUILDINGS
+  ======================================================================== */
+
+  getBuildings:
+    (): Promise<Building[]> =>
+      request<Building[]>(
+        "/api/buildings",
+      ),
+
+  getBuilding: (
+    id: string,
+  ): Promise<Building> =>
+    request<Building>(
+      `/api/buildings/${encodeURIComponent(
+        id,
+      )}`,
+    ),
+
+  getBuildingFloors: (
+    id: string,
+  ): Promise<Floor[]> =>
+    request<Floor[]>(
+      `/api/buildings/${encodeURIComponent(
+        id,
+      )}/floors`,
+    ),
+
+  getBuildingProperties: (
+    id: string,
+  ): Promise<PropertyUnit[]> =>
+    request<PropertyUnit[]>(
+      `/api/buildings/${encodeURIComponent(
+        id,
+      )}/properties`,
+    ),
+
+  /* ========================================================================
+     PROPERTIES
+  ======================================================================== */
+
+  getProperties:
+    (): Promise<PropertyUnit[]> =>
+      request<PropertyUnit[]>(
+        "/api/properties",
+      ),
+
+  getProperty: (
+    id: string,
+  ): Promise<PropertyUnit> =>
+    request<PropertyUnit>(
+      `/api/properties/${encodeURIComponent(
+        id,
+      )}`,
+    ),
+
+  getPropertyGeometry: (
+    id: string,
+  ): Promise<PropertyGeometry> =>
+    request<PropertyGeometry>(
+      `/api/properties/${encodeURIComponent(
+        id,
+      )}/geometry`,
+    ),
+
+  getPropertyEvidence: (
+    id: string,
+  ): Promise<Evidence[]> =>
+    request<Evidence[]>(
+      `/api/properties/${encodeURIComponent(
+        id,
+      )}/evidence`,
+    ),
+
+  getPropertyConfidence: (
+    id: string,
+  ): Promise<ConfidenceScore> =>
+    request<ConfidenceScore>(
+      `/api/properties/${encodeURIComponent(
+        id,
+      )}/confidence`,
+    ),
+
+  getPropertyValidation: (
+    id: string,
+  ): Promise<ValidationSummary> =>
+    request<ValidationSummary>(
+      `/api/properties/${encodeURIComponent(
+        id,
+      )}/validation`,
+    ),
+
+  validateProperty: (
+    id: string,
+  ): Promise<ValidationSummary> =>
+    request<ValidationSummary>(
+      `/api/properties/${encodeURIComponent(
+        id,
+      )}/validate`,
+      {
+        method: "POST",
+      },
+    ),
+
+  /* ========================================================================
+     INFRASTRUCTURE
+  ======================================================================== */
+
+  getUnderground:
+    (): Promise<Infrastructure[]> =>
+      request<Infrastructure[]>(
+        "/api/infrastructures/underground",
+      ),
+
+  getElevated:
+    (): Promise<Infrastructure[]> =>
+      request<Infrastructure[]>(
+        "/api/infrastructures/elevated",
+      ),
+
+  /* ========================================================================
+     REVIEWS
+  ======================================================================== */
+
+  getReviews:
+    (): Promise<ReviewCase[]> =>
+      request<ReviewCase[]>(
+        "/api/reviews",
+      ),
+
+  getReview: (
+    id: string,
+  ): Promise<ReviewCase> =>
+    request<ReviewCase>(
+      `/api/reviews/${encodeURIComponent(
+        id,
+      )}`,
+    ),
+
+  approveReview: (
+    id: string,
+    reason: string,
+  ): Promise<ReviewCase> =>
+    request<ReviewCase>(
+      `/api/reviews/${encodeURIComponent(
+        id,
+      )}/approve`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          reason,
+        }),
+      },
+    ),
+
+  rejectReview: (
+    id: string,
+    reason: string,
+  ): Promise<ReviewCase> =>
+    request<ReviewCase>(
+      `/api/reviews/${encodeURIComponent(
+        id,
+      )}/reject`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          reason,
+        }),
+      },
+    ),
+
   correctProperty: (
     id: string,
-    data: { z_min_m?: number; z_max_m?: number; footprint_2d?: number[][]; reason: string }
+    data: {
+      z_min_m?: number;
+      z_max_m?: number;
+      footprint_2d?: number[][];
+      reason: string;
+    },
   ): Promise<PropertyUnit> =>
-    fetch(`${API_BASE}/api/reviews/${id}/correct`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(handleResponse<PropertyUnit>),
+    request<PropertyUnit>(
+      `/api/reviews/${encodeURIComponent(
+        id,
+      )}/correct`,
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      },
+    ),
 
-  // Reports
-  getReports: (): Promise<IssueReport[]> =>
-    fetch(`${API_BASE}/api/reports`).then(handleResponse<IssueReport[]>),
-  submitReport: (data: { property_id: string; title: string; description: string; contact_email: string; category?: string }): Promise<IssueReport> =>
-    fetch(`${API_BASE}/api/reports`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(handleResponse<IssueReport>),
+  /* ========================================================================
+     REPORTS
+  ======================================================================== */
 
-  // LiDAR & AI
-  analyzeLidar: (propertyId: string) =>
-    fetch(`${API_BASE}/api/lidar/analyze`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ property_id: propertyId })
-    }).then(handleResponse<any>),
+  getReports:
+    (): Promise<IssueReport[]> =>
+      request<IssueReport[]>(
+        "/api/reports",
+      ),
 
-  runBuildingExtraction: (parcelId: string) =>
-    fetch(`${API_BASE}/api/ai/building-extraction`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ parcel_id: parcelId })
-    }).then(handleResponse<any>),
+  submitReport: (
+    data: {
+      property_id: string;
+      title: string;
+      description: string;
+      contact_email: string;
+      category?: string;
+    },
+  ): Promise<IssueReport> =>
+    request<IssueReport>(
+      "/api/reports",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      },
+    ),
 
-  runFloorSegmentation: (buildingId: string) =>
-    fetch(`${API_BASE}/api/ai/floor-segmentation`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ building_id: buildingId })
-    }).then(handleResponse<any>),
+  /* ========================================================================
+     LiDAR
+  ======================================================================== */
 
-  // Simulations
+  analyzeLidar: (
+    propertyId: string,
+  ) =>
+    request<unknown>(
+      "/api/lidar/analyze",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          property_id: propertyId,
+        }),
+      },
+    ),
+
+  /* ========================================================================
+     AI
+  ======================================================================== */
+
+  runBuildingExtraction: (
+    parcelId: string,
+  ) =>
+    request<unknown>(
+      "/api/ai/building-extraction",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          parcel_id: parcelId,
+        }),
+      },
+    ),
+
+  runFloorSegmentation: (
+    buildingId: string,
+  ) =>
+    request<unknown>(
+      "/api/ai/floor-segmentation",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          building_id: buildingId,
+        }),
+      },
+    ),
+
+  runVerticalDelineation: (
+    buildingId: string,
+  ) =>
+    request<unknown>(
+      "/api/ai/vertical-delineation",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          building_id: buildingId,
+        }),
+      },
+    ),
+
+  /* ========================================================================
+     SIMULATIONS
+  ======================================================================== */
+
   resetSimulation: () =>
-    fetch(`${API_BASE}/api/simulation/reset`, { method: 'POST' }).then(handleResponse<any>),
-  triggerSpatialError: () =>
-    fetch(`${API_BASE}/api/simulation/spatial-error`, { method: 'POST' }).then(handleResponse<any>),
-  triggerMissingEvidence: () =>
-    fetch(`${API_BASE}/api/simulation/missing-evidence`, { method: 'POST' }).then(handleResponse<any>),
-  triggerMultiSourceConflict: () =>
-    fetch(`${API_BASE}/api/simulation/multi-source-conflict`, { method: 'POST' }).then(handleResponse<any>),
-  getRuralCandidates: () =>
-    fetch(`${API_BASE}/api/simulation/rural-structure`, { method: 'POST' }).then(handleResponse<any>),
+    request<{
+      message: string;
+    }>(
+      "/api/simulation/reset",
+      {
+        method: "POST",
+      },
+    ),
 
-  // Audit
-  getAuditLog: (): Promise<AuditEvent[]> =>
-    fetch(`${API_BASE}/api/audit`).then(handleResponse<AuditEvent[]>),
-  getRevisions: (): Promise<any[]> =>
-    fetch(`${API_BASE}/api/audit/revisions`).then(handleResponse<any[]>)
+  triggerSpatialError: () =>
+    request<unknown>(
+      "/api/simulation/spatial-error",
+      {
+        method: "POST",
+      },
+    ),
+
+  triggerMissingEvidence: () =>
+    request<unknown>(
+      "/api/simulation/missing-evidence",
+      {
+        method: "POST",
+      },
+    ),
+
+  triggerMultiSourceConflict: () =>
+    request<unknown>(
+      "/api/simulation/multi-source-conflict",
+      {
+        method: "POST",
+      },
+    ),
+
+  getRuralCandidates: () =>
+    request<unknown>(
+      "/api/simulation/rural-structure",
+      {
+        method: "POST",
+      },
+    ),
+
+  /* ========================================================================
+     AUDIT
+  ======================================================================== */
+
+  getAuditLog:
+    (): Promise<AuditEvent[]> =>
+      request<AuditEvent[]>(
+        "/api/audit",
+      ),
+
+  getRevisions:
+    (): Promise<unknown[]> =>
+      request<unknown[]>(
+        "/api/audit/revisions",
+      ),
 };
+
+/* ==========================================================================
+   AUTH STORAGE EXPORT
+========================================================================== */
+
+export const authStorage = {
+  getToken,
+  getUser: getStoredUser,
+  setAuth,
+  clearAuth,
+};
+
+export default api;
